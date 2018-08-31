@@ -1,0 +1,24 @@
+{
+  "name": "ps-editor",
+  "version": "1.0.0",
+  "description": "ps-editor",
+  "main": "index.js",
+  "scripts": {
+    "init": "smart-angular init",
+    "dev": "smart-angular dev",
+    "pack": "smart-angular pack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mayalust/ps-editor.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mayalust/ps-editor/issues"
+  },
+  "homepage": "https://github.com/mayalust/ps-editor#readme",
+  "dependencies": {
+    "smart-angular": "^1.0.46"
+  }
+}
