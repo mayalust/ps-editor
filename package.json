@@ -1,6 +1,6 @@
 {
   "name": "ps-editor",
-  "version": "1.0.1",
+  "version": "1.0.11",
   "description": "ps-editor",
   "main": "index.js",
   "scripts": {

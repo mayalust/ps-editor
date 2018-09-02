@@ -1,4 +1,4 @@
-<config injector=""
+<config injector="$rootScope"
 ></config>
 <properties>
   <script type="text/javascript">
@@ -6,12 +6,13 @@
       return [{
         label : "基本设定",
         attributes : {
-          value : ["数值", "input", "default"]
+          value : ["数值", "input", ""],
         }
       },{
         label : "高级设定",
         attributes : {
-          view : ["取值", "input", "mmm"]
+          output : ["输出变量", "input", ""],
+          input : ["获取变量", "input", ""]
         }
       }];
     }
@@ -20,19 +21,41 @@
 </properties>
 <template>
   <div>
-    <ps-input ng-model="option.attributes.value"/>
-    <span ng-bind="option.attributes.view"></span>
+    <ps-input ng-model="a"
+              data-change="changeFn(val)"/>
+    <span ng-bind="m"></span>
   </div>
 </template>
 <script type="text/javascript">
-  export default function(properties){
+  export default function(rootScope){
     return {
       scope : {
         option : "="
       },
       link(scope, element){
+        let hlist = [];
+        function createWatcher(str, callback){
+          let inputhandle, handle;
+          inputhandle = scope.$watch(str, (n,o,s)=>{
+            handle && handle();
+            if(n){
+              console.log(n);
+              handle = rootScope.$watch(n, callback)
+            }
+          })
+          return [inputhandle, handle]
+        }
+        scope.changeFn = function(val){
+          rootScope[scope.option.attributes.output] = val;
+        }
+        Array.prototype.push.apply(hlist, createWatcher("option.attributes.input", (n,o,s) => {
+          scope.m = n;
+        }));
         scope.$on("$destroy", ()=>{
-          console.log("destroy");
+          for(var i = 0; i < hlist.length; i++){
+            hlist[i]();
+          }
+          handle && handle()
         })
       }
     }

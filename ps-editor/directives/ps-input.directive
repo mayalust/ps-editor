@@ -3,7 +3,10 @@
 <template>
   <div>
     <div class="wrap">
-      <input ng-model="ngModel" class="form-control"/>
+      <input ng-model="ngModel"
+             placeholder="请输入"
+             ng-change="changeFn()"
+             class="form-control"/>
     </div>
   </div>
 </template>
@@ -11,9 +14,13 @@
   export default function(properties){
     return {
       scope : {
-        ngModel : "="
+        ngModel : "=",
+        change : "&"
       },
       link(scope, element){
+        scope.changeFn = function(){
+          scope.change({val : scope.ngModel});
+        }
         scope.$on("$destroy", ()=>{
           console.log("destroy");
         })

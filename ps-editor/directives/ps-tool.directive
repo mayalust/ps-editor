@@ -113,7 +113,9 @@
         scope.properties = properties.get(`freeComp${upper}`) || [];
         attrs = properties.getAllAttrs(`freeComp${upper}`) || {};
         scope.option.attributes = scope.option.attributes || {};
-        extend(scope.option.attributes, attrs);
+        for(var i in scope.option.attributes){
+          scope.option.attributes[i] = scope.option.attributes[i] || attrs[i];
+        }
         for(var i = 0; i < scope.properties.length; i++){
           for(var j in scope.properties[i].attributes){
             scope.properties[i].attributes[j][2] = scope.option.attributes[j];
