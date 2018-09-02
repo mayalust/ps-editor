@@ -1,0 +1,44 @@
+<config injector=""
+></config>
+<properties>
+  <script type="text/javascript">
+    function properties(){
+      return [{
+        label : "基本设定",
+        attributes : {
+          value : ["数值", "input", "default"]
+        }
+      },{
+        label : "高级设定",
+        attributes : {
+          view : ["取值", "input", "mmm"]
+        }
+      }];
+    }
+    export { properties }
+  </script>
+</properties>
+<template>
+  <div>
+    <ps-input ng-model="option.attributes.value"/>
+    <span ng-bind="option.attributes.view"></span>
+  </div>
+</template>
+<script type="text/javascript">
+  export default function(properties){
+    return {
+      scope : {
+        option : "="
+      },
+      link(scope, element){
+        scope.$on("$destroy", ()=>{
+          console.log("destroy");
+        })
+      }
+    }
+  }
+</script>
+<style type="less" scoped="true">
+  .wrap{
+  }
+</style>

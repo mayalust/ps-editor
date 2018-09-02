@@ -1,0 +1,30 @@
+<config injector="$q,$timeout,$compile"
+></config>
+<template>
+  <div>
+  </div>
+</template>
+<script type="text/javascript">
+  export default function(q,timeout,compile){
+    return {
+      scope : {
+        option : `=`,
+      },
+      link(scope, element, attr){
+        let dom = document.createElement(`ps-${scope.option[1]}`);
+        dom.setAttribute(`ng-model`, `option[2]`);
+        $append(element[0], dom);
+        function $append(target, dom){
+          target.appendChild(dom);
+          compile(target)(scope);
+        }
+        scope.$on(`$destroy`, ()=>{
+          console.log(`destroy`);
+        })
+      }
+    }
+  }
+</script>
+<style type="less" scoped="true">
+
+</style>

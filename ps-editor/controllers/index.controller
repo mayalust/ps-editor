@@ -1,0 +1,105 @@
+<config defaultRouter = "true"
+    injector="$scope,$q,$timeout"
+></config>
+<template>
+  <div class="row">
+    <div class="leftpart">
+      <free-board-left
+          data-tools="tools">
+      </free-board-left>
+    </div>
+    <div class="rightpart">
+      <!--
+      <free-board-preview
+          data-options="options">
+      </free-board-preview>-->
+      <div class="free-board-wrap">
+        <free-board
+            data-options="options">
+        </free-board>
+      </div>
+    </div>
+  </div>
+</template>
+<script type="text/javascript">
+  export default function(scope,q,timeout){
+    scope.tools = [{
+      label : `输入框`,
+      data : {
+        type : `input`,
+        val : 9
+      }
+    }];
+    scope.options = [{
+      type : `row`,
+      children : [{
+        type : `col`,
+        col : 3,
+        children : [{
+          type : `input`,
+          val : 0
+        },{
+          type : `input`,
+          val : 1
+        }]
+      },{
+        type : `col`,
+        col : 9,
+        children : [{
+          type : `input`,
+          val : 2
+        }]
+      }]
+    },{
+      type : `row`,
+      children : [{
+        type : `col`,
+        col : 9,
+        children : [{
+          type : `input`,
+          val : 3
+        },{
+          type : `input`,
+          val : 4
+        },{
+          type : `input`,
+          val : 5
+        }]
+      },{
+        type : `col`,
+        col : 3,
+        children : []
+      }]
+    }];
+    /**
+    timeout(function(){
+      scope.options[1].children[0].children.splice(0,1);
+    }, 3000)
+     */
+  };
+</script>
+<style type="less">
+  .leftpart{
+    position : absolute;
+    width : 250px;
+    top : 0;
+    bottom : 0;
+    left : 0;
+  }
+  .rightpart{
+    position : absolute;
+    right : 0;
+    top : 30px;
+    bottom : 0;
+    left : 250px;
+    overflow-x : hidden;
+    overflow-y : auto;
+    .free-board-wrap{
+      position : absolute;
+      width : ~'calc( 100vw - 265px )';
+      top : 0;
+      bottom : 0;
+      left : 0;
+    }
+  }
+</style>

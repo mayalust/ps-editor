@@ -1,6 +1,6 @@
 {
   "name": "ps-editor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "ps-editor",
   "main": "index.js",
   "scripts": {
@@ -19,6 +19,6 @@
   },
   "homepage": "https://github.com/mayalust/ps-editor#readme",
   "dependencies": {
-    "smart-angular": "^1.0.46"
+    "smart-angular": "^1.0.52"
   }
 }

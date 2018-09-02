@@ -1,0 +1,94 @@
+<config injector="$q,$timeout,$compile"
+></config>
+<template>
+  <div class="modal-cover">
+    <div class="fb-modal">
+      <div class="title">
+        组件属性
+      </div>
+      <div class="fb-modal-body">
+        <div ng-repeat="prop in properties"
+             class="menu"
+             ng-class="{true:'active'}[prop.active]"
+             ng-click="menuSel(prop)">
+          <span ng-bind="prop.label"></span>
+        </div>
+        <div id="content">
+          <table class="attr-table">
+            <tr ng-repeat="(key,obj) in content">
+              <td class="td-title">
+                <span ng-bind="obj[0]"></span>
+              </td>
+              <td>
+                <free-board-tool data-option="obj"></free-board-tool>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <button class="btn btn-cancel btom" ng-click="cancelclick()">取消</button>
+        <button class="btn btn-primary btom" ng-click="submitclick()">确定</button>
+      </div>
+    </div>
+  </div>
+</template>
+<script type="text/javascript">
+  export default function(q,timeout,compile){
+    return {
+      scope : {
+        option : `=`,
+        properties : `=`,
+        onSubmit : `&`,
+        onCancel : `&`
+      },
+      link(scope, element, attr){
+        let modal = element[0].getElementsByTagName(`div`)[0], selProp = null,
+          target = modal.children[1].children[0].children[0];
+        timeout(() => {
+          modal.setAttribute(`class`, `fb-modal fade-in`);
+          selProp = scope.properties[0];
+          selProp.active = true;
+          scope.content = selProp.attributes;
+          console.log(scope.properties);
+        });
+        scope.menuSel = function(prop){
+          selProp.active = false;
+          prop.active = true;
+          selProp = prop;
+          scope.content = selProp.attributes;
+        }
+        scope.submitclick = function(){
+          scope.onSubmit({d:scope.properties});
+          scope.onSubmit({d:scope.properties});
+          destroy();
+        }
+        scope.cancelclick = function(){
+          destroy();
+        }
+        element[0].onclick = function(e){
+          if(e.eventPhase === 2){
+            destroy();
+          }
+        }
+        function $append(target, dom){
+          target.appendChild(dom);
+          compile(target)(scope);
+        }
+        function destroy(){
+          delete selProp.active;
+          scope.content = null;
+          element[0].remove();
+          modal = null;
+          scope.$destroy();
+          scope.onCancel();
+
+        }
+      }
+    }
+  }
+</script>
+<style type="less" scoped="true">
+  .btom{
+    float : right;
+    margin : 10px 5px 0 0;
+  }
+</style>
