@@ -43,6 +43,7 @@
                 this.label = this.name;
                 this.icon = "glyphicon glyphicon-folder-open";
               } else {
+                regex.lastIndex = 0;
                 var moveBtn = document.createElement("free-board-drag-btn");
                 var match = regex.exec(this.abspath);
                 this.label = match[1];

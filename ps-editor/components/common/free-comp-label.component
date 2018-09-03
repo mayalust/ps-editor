@@ -1,0 +1,60 @@
+<config injector="$rootScope"
+></config>
+<properties>
+  <script type="text/javascript">
+    function properties(){
+      return [{
+        label : "基本设定",
+        attributes : {
+          value : ["数值", "input", "default"],
+        }
+      },{
+        label : "高级设定",
+        attributes : {
+          input : ["获取变量", "input", ""]
+        }
+      }];
+    }
+    export { properties }
+  </script>
+</properties>
+<template>
+  <div>
+    <span ng-bind="option.attributes.value"></span>
+  </div>
+</template>
+<script type="text/javascript">
+  export default function(rootScope){
+    return {
+      scope : {
+        option : "="
+      },
+      link(scope, element){
+        let hlist = [];
+        function createWatcher(str, callback){
+          let inputhandle, handle;
+          inputhandle = scope.$watch(str, (n,o,s)=>{
+            handle && handle();
+            if(n){
+              console.log(n);
+              handle = rootScope.$watch(n, callback)
+            }
+          })
+          return [inputhandle, handle]
+        }
+        Array.prototype.push.apply(hlist, createWatcher("option.attributes.input", (n,o,s) => {
+          scope.option.attributes.value = n;
+        }));
+        scope.$on("$destroy", ()=>{
+          for(var i = 0; i < hlist.length; i++){
+            hlist[i] && hlist[i]();
+          }
+        })
+      }
+    }
+  }
+</script>
+<style type="less" scoped="true">
+  .wrap{
+  }
+</style>
