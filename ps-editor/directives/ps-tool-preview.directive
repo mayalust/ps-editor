@@ -24,7 +24,7 @@
           target.appendChild(dom);
           compile(dom)(scope);
         }
-        let el = document.createElement(`ps-${scope.option.type}`);
+        let el = document.createElement(`free-comp-${scope.option.type}`);
         el.setAttribute(`data-option`, `option`);
         el.setAttribute(`data-preview`, `true`);
         $append(tar, el);

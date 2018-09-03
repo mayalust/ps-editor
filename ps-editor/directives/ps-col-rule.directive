@@ -34,7 +34,6 @@
             }
             window.onmouseup = null;
             scope.$apply(() => {
-              console.log(cachedSel, e.target);
               if(cachedSel !== e.target){
                 scope.onEnd();
               };

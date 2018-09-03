@@ -1,5 +1,5 @@
 <config defaultRouter = "true"
-    injector="$scope,$rootScope,$q,$timeout,psCommand"
+    injector="$scope,$rootScope,$location,$q,$timeout,psCommand"
 ></config>
 <template>
   <div>
@@ -53,14 +53,10 @@
 </template>
 <script type="text/javascript">
   import { createDrop } from "../toolkit/widget.js";
-  export default function(scope,rootScope,q,timeout,psCommand){
+  export default function(scope,rootScope,location,q,timeout,psCommand,comptree){
+    let storage = window.localStorage;
     scope.dirty = false;
-    scope.tools = [{
-      label : `输入框`,
-      data : {
-        type : `input`
-      }
-    }];
+    scope.tools = comptree;
     scope.options = [{
       type : `row`,
       children : [{
@@ -96,6 +92,9 @@
         children : []
       }]
     }];
+    function clone(obj){
+      return JSON.parse(JSON.stringify(obj));
+    }
     function $render(){
       scope.commands = psCommand.commands();
       scope.waitings = psCommand.waitings();
@@ -153,7 +152,8 @@
 
     }
     scope.preview = function(){
-
+      storage["freeboardView"] = JSON.stringify(scope.options);
+      location.path("preview");
     }
   };
 </script>

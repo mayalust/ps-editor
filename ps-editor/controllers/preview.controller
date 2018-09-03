@@ -1,0 +1,19 @@
+<config defaultRouter = "true"
+    injector="$scope,$rootScope,$q,$timeout,psCommand"
+></config>
+<template>
+  <div>
+      <free-board-preview
+          data-options="options">
+      </free-board-preview>
+  </div>
+</template>
+<script type="text/javascript">
+  export default function(scope,rootScope,q,timeout,psCommand) {
+    let storage = window.localStorage;
+    scope.options = JSON.parse(storage["freeboardView"]);
+  }
+</script>
+<style type="less">
+
+</style>

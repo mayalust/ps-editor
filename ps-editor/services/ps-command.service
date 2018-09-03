@@ -17,7 +17,6 @@
       add(name, arr){
         waitings = [];
         index = commands.push([name, arr]) - 1;
-        console.log(commands, waitings);
       },
       append(parentlist, item){
         let cmd = [
@@ -103,7 +102,6 @@
             this.forward();
           }
         }
-        console.log(index, commands, waitings);
       },
       forward(){
         if(waitings.length > 0){

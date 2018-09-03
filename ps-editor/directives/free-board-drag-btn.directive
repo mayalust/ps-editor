@@ -1,7 +1,7 @@
 <config injector="$q,$compile,psDrag,$timeout"
 ></config>
 <template>
-  <button class="btn-sm btn-primary" draggable="false">拖拽</button>
+  <button class="btn-xs btn-primary" draggable="false">拖拽</button>
 </template>
 <script type="text/javascript">
   export default function(q,compile,psDrag,timeout){
