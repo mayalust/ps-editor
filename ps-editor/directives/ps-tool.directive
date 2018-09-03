@@ -6,7 +6,7 @@
   </div>
 </template>
 <script type="text/javascript">
-  import widget from "../tookit/widget.js";
+  import widget from "../toolkit/widget.js";
   export default function(q,timeout,rootScope,compile,psDrag,psCommand,properties){
     return {
       scope : {
@@ -14,7 +14,6 @@
         parentList : `=`
       },
       link(scope, element, attr){
-        console.dir(scope.option);
         let tar = element[0],
           iteminner = document.createElement(`div`),
           attrs,
@@ -92,6 +91,7 @@
             y : y + dom.clientHeight + dom.clientTop + 5
           }
         }
+        modal.setAttribute(`data-option`, `option`);
         modal.setAttribute(`data-properties`, `properties`);
         modal.setAttribute(`data-on-submit`, `submit(d)`);
         modal.setAttribute(`data-on-cancel`, `cancel()`);
@@ -122,14 +122,39 @@
             scope.properties[i].attributes[j][2] = scope.option.attributes[j];
           }
         }
-        console.log(scope.properties);
-        scope.submit = function(d){
+        function checkDirty(){
           for(var i = 0; i < scope.properties.length; i++){
             for(var j in scope.properties[i].attributes){
-              scope.option.attributes[j] = scope.properties[i].attributes[j][2];
+              if(scope.option.attributes[j] != scope.properties[i].attributes[j][2]){
+                //scope.option.attributes[j] = scope.properties[i].attributes[j][2];
+                return true;
+              }
             }
           }
-          scope.option = clone(scope.option);
+          return false
+        }
+        function getPropObj(){
+          var obj = {};
+          for(var i = 0; i < scope.properties.length; i++){
+            for(var j in scope.properties[i].attributes){
+              obj[j] = scope.properties[i].attributes[j][2];
+            }
+          }
+          return obj;
+        }
+        scope.submit = function(d){
+          let isDirty = checkDirty(),
+            newObj = isDirty
+              ? psCommand.add(`编辑了组件[${scope.option.type}]属性`, [
+                psCommand.update(scope, "option", getPropObj(), (n, val) => {
+                  if(val == undefined){
+                    return n.attributes;
+                  } else {
+                    n.attributes = val;
+                  }
+                })
+              ]) : {};
+          console.log(scope.option);
         }
         scope.cancel = function(){
           console.log(`cancel`);

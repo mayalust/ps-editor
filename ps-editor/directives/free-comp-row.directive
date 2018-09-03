@@ -1,4 +1,4 @@
-<config injector=""
+<config injector="$rootScope,psCommand"
 ></config>
 <properties>
   <script type="text/javascript">
@@ -28,18 +28,41 @@
     <ps-col-rule
         ng-model="option.children"
         data-options="option.children"
+        on-start = "onStart()"
+        on-end = "onEnd()"
         ng-if="!preview">
     </ps-col-rule>
   </div>
 </template>
 <script type="text/javascript">
-  export default function(){
+  export default function(rootScope,psCommand){
     return {
       scope : {
         option : "=",
         preview : "="
       },
       link(scope){
+        let oldVal, newVal;
+        scope.onStart = function(){
+          oldVal = scope.option.children.map((n) => {
+            return n.col;
+          });
+        }
+        scope.onEnd = function(){
+          newVal = scope.option.children.map((n) => {
+            return n.col;
+          });
+          console.log(oldVal, newVal);
+          psCommand.add(`调整栅格结构为${newVal.toString()}`,[
+            psCommand.update2(scope.option, "children", newVal, oldVal, function(s, a, v){
+              s[a] = s[a].map((n, i) => {
+                n.col = v[i]
+                return n;
+              })
+            })
+          ])
+          rootScope.$broadcast(`freeboard:col-adjusted`);
+        }
         scope.$on("$destroy", (e) => {
           console.log("destroyed:[row]!!");
         })

@@ -9,6 +9,8 @@
     return {
       scope : {
         options : "=",
+        onStart : "&",
+        onEnd : "&"
       },
       require : "ngModel",
       link(scope, element, attr, ngModel){
@@ -17,11 +19,12 @@
           console.log("destroyed:[row]!!");
         });
         function createBar(inx){
-          let bar = document.createElement("div"), curSel = null;
+          let bar = document.createElement("div"), curSel = null,
+            cachedSel = null;
           bar.setAttribute("class", "bar");
           bar.style.left = (inx - 0 + 1) / 12 * 100 + "%";
           bar.onmousedown = onmousedown
-          function winmouseup(){
+          function winmouseup(e){
             el.setAttribute("class", "rule");
             curSel && curSel.setAttribute("class", "bar active");
             bar.onmousedown = onmousedown;
@@ -29,21 +32,29 @@
               bars[i].onmouseover = null;
               bars[i].onmouseout = null;
             }
-            curSel = null;
+            window.onmouseup = null;
+            scope.$apply(() => {
+              console.log(cachedSel, e.target);
+              if(cachedSel !== e.target){
+                scope.onEnd();
+              };
+              curSel = null;
+            });
           }
-          function onmousedown(){
+          function onmousedown(e){
             let cls = bar.getAttribute("class"),
               mousedown_self = this,
               st = 1,
               nd = 0,
               inx = bars.indexOf(this);
+            cachedSel = e.target;
+            scope.onStart();
             function render(){
               let cols = [], stack = 0;
-              curSel = this;
+               curSel = this;
               for(var i = 0; i < bars.length; i++){
                 if(bars[i].getAttribute("class").indexOf("active") != -1
                   || this === bars[i]){
-                  console.log(stack);
                   cols.push(i - stack + 1);
                   stack = i + 1;
                 }
@@ -66,7 +77,6 @@
                   continue;
                 } else if(nd > inx + 1){
                   for(let j = st - 1; j < nd - 1; j++){
-                    console.log(j);
                     bars[j].onmouseover = function(){
                       render.call(this);
                     }
@@ -98,7 +108,11 @@
           return val;
         })
         ngModel.$render = function(){
-          for(var i = 0; i < ngModel.$viewValue.length - 1; i++){
+          let i;
+          for(i = 0; i < 11; i++){
+            bars[i].setAttribute("class", "bar");
+          }
+          for(i = 0; i < ngModel.$viewValue.length - 1; i++){
             bars[ngModel.$viewValue[i].inx - 1].setAttribute("class", "bar active");
           }
         }

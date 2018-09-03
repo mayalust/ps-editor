@@ -1,15 +1,16 @@
 <config defaultRouter = "true"
-    injector="$scope,$q,$timeout,psCommand"
+    injector="$scope,$rootScope,$q,$timeout,psCommand"
 ></config>
 <template>
   <div>
     <div class="toppart">
-      <button ng-click="save()"
+      <button ng-disabled="!psCommand.dirty"
+          ng-click="save()"
           class="btn-xs btn-success pull-right">
         保存
       </button>
       <button ng-disabled="waitings.length + commands.length == 0"
-          ng-click="history()"
+          ng-click="history($event)"
           class="btn-xs btn-default pull-right">
         历史
       </button>
@@ -23,8 +24,12 @@
           class="btn-xs btn-default pull-right">
         撤销
       </button>
+      <button ng-click="preview()"
+          class="btn-xs btn-info pull-right">
+        预览
+      </button>
       <button ng-click="setting()"
-          class="btn-xs btn-default pull-right">
+              class="btn-xs btn-default pull-right">
         全局设置
       </button>
     </div>
@@ -47,12 +52,13 @@
   </div>
 </template>
 <script type="text/javascript">
-  export default function(scope,q,timeout,psCommand){
+  import { createDrop } from "../toolkit/widget.js";
+  export default function(scope,rootScope,q,timeout,psCommand){
+    scope.dirty = false;
     scope.tools = [{
       label : `输入框`,
       data : {
-        type : `input`,
-        val : 9
+        type : `input`
       }
     }];
     scope.options = [{
@@ -61,18 +67,15 @@
         type : `col`,
         col : 3,
         children : [{
-          type : `input`,
-          val : 0
+          type : `input`
         },{
-          type : `input`,
-          val : 1
+          type : `input`
         }]
       },{
         type : `col`,
         col : 9,
         children : [{
-          type : `input`,
-          val : 2
+          type : `input`
         }]
       }]
     },{
@@ -81,14 +84,11 @@
         type : `col`,
         col : 9,
         children : [{
-          type : `input`,
-          val : 3
+          type : `input`
         },{
-          type : `input`,
-          val : 4
+          type : `input`
         },{
-          type : `input`,
-          val : 5
+          type : `input`
         }]
       },{
         type : `col`,
@@ -100,22 +100,59 @@
       scope.commands = psCommand.commands();
       scope.waitings = psCommand.waitings();
     }
+    function calcBasePoint(dom){
+      var target = dom,
+        x = target.offsetLeft,
+        y = target.offsetTop;
+      while(target = target.offsetParent){
+        x += target.offsetLeft + target.clientLeft;
+        y += target.offsetTop + target.clientTop - target.scrollTop;
+      }
+      return {
+        x : x + dom.clientWidth,
+        y : y + dom.clientHeight + dom.clientTop
+      }
+    }
     $render();
     scope.save = function(){
-
+      scope.psCommand.dirty = false;
     }
-    scope.history = function(){
-
+    scope.psCommand = psCommand;
+    scope.history = function(e){
+      $render();
+      let historys = [['打开视图']].concat(scope.commands).concat(scope.waitings).map((n, i) => {
+          return {
+            name : n[0],
+            onclick : function(){
+              scope.$apply(() => {
+                psCommand.moveTo(i-1);
+                $render();
+                rootScope.$broadcast(`freeboard:changed`);
+              })
+            }
+          }
+        }),
+        offsetLeft = 200,
+        offset = calcBasePoint( e.currentTarget ),
+        ins = createDrop(offset, historys, "right", scope.commands.length);
     }
     scope.undo = function(){
-      $render();
       psCommand.back();
+      rootScope.$broadcast(`freeboard:changed`);
+      $render();
     }
     scope.redo = function(){
-      $render();
       psCommand.forward();
+      rootScope.$broadcast(`freeboard:changed`);
+      $render();
     }
+    rootScope.$on(`freeboard:col-adjusted`, () => {
+      $render();
+    });
     scope.setting = function(){
+
+    }
+    scope.preview = function(){
 
     }
   };
@@ -126,7 +163,6 @@
     height : 30px;
     width : 100%;
     background-color : #337ab7;
-    z-index : 1;
     .btn-xs {
       margin : 3px 10px 0 0;
       &[disabled]{

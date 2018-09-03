@@ -48,7 +48,12 @@
           selProp = scope.properties[0];
           selProp.active = true;
           scope.content = selProp.attributes;
-          console.log(scope.properties);
+          console.log(scope.option);
+          for(var i = 0; i < scope.properties.length; i++){
+            for(var j in scope.properties[i].attributes){
+              scope.properties[i].attributes[j][2] = scope.option.attributes[j];
+            }
+          }
         });
         scope.menuSel = function(prop){
           selProp.active = false;
@@ -57,7 +62,6 @@
           scope.content = selProp.attributes;
         }
         scope.submitclick = function(){
-          scope.onSubmit({d:scope.properties});
           scope.onSubmit({d:scope.properties});
           destroy();
         }
@@ -80,7 +84,6 @@
           modal = null;
           scope.$destroy();
           scope.onCancel();
-
         }
       }
     }

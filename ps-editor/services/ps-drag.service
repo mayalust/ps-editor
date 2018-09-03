@@ -37,12 +37,12 @@
           if(domtarget.__isColEnd__ == true){
             list = domtarget.__parentList__;
             if(parentList){
-              psCommand.add(`移动了组件`, [
+              psCommand.add(`移动了组件[${option.type}]`, [
                 psCommand.remove(parentList, parentList.indexOf(option)),
                 psCommand.append(list, option)
               ]);
             } else {
-              psCommand.add(`创建了组件`,[
+              psCommand.add(`创建了组件[${option.type}]`,[
                 psCommand.append(list, clone(option))
               ]);
             }
@@ -50,12 +50,12 @@
             list = domtarget.__parentList__;
             inx = domtarget.__index__;
             if(parentList){
-              psCommand.add(`移动了组件`,[
+              psCommand.add(`移动了组件[${option.type}]`,[
                 psCommand.remove(parentList, parentList.indexOf(option)),
                 psCommand.insert(list, option, inx)
               ]);
             } else {
-              psCommand.add(`创建了组件` [
+              psCommand.add(`创建了组件[${option.type}]`, [
                 psCommand.insert(list, clone(option), inx)
               ]);
             }
