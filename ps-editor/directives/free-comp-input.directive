@@ -53,9 +53,8 @@
         }));
         scope.$on("$destroy", ()=>{
           for(var i = 0; i < hlist.length; i++){
-            hlist[i]();
+            hlist[i] && hlist[i]();
           }
-          handle && handle()
         })
       }
     }

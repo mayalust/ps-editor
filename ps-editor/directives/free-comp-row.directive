@@ -1,7 +1,20 @@
 <config injector=""
 ></config>
+<properties>
+  <script type="text/javascript">
+    function properties(){
+      return [{
+        label : "基本设定",
+        attributes : {
+          class : ["样式类", "input", ""],
+        }
+      }];
+    }
+    export { properties }
+  </script>
+</properties>
 <template>
-  <div>
+  <div class="row" ng-class="option.attributes.class">
     <div class="colwrap">
       <div ng-repeat="op in option.children"
            ng-class="'col-xs-' + op.col">

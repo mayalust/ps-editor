@@ -14,7 +14,48 @@
         parentList : `=`
       },
       link(scope, element, attr){
-        let tar = element[0];
+        console.dir(scope.option);
+        let tar = element[0],
+          iteminner = document.createElement(`div`),
+          attrs,
+          upper = scope.option.type.substring(0,1).toUpperCase() + scope.option.type.substring(1),
+          el = document.createElement(`free-comp-${scope.option.type}`),
+          option = document.createElement(`div`),
+          head = document.createElement(`div`),
+          colHead = document.createElement(`col-head`),
+          modal = document.createElement(`ps-modal`),
+          point,
+          buttons = [{
+            name : `编辑`,
+            onclick : function(e){
+              scope.$apply(()=>{
+                $append(document.body, modal);
+              })
+            }
+          },{
+            name : `删除`,
+            onclick : function(e){
+              scope.$apply(() => {
+                psCommand.add(`删除了组件`,[psCommand.remove(scope.parentList, scope.parentList.indexOf(scope.option))]);
+                rootScope.$broadcast(`freeboard:changed`);
+              })
+            }
+          },{
+            name : `剪切`,
+            onclick : function(e){
+              scope.$apply(() => {
+                psCommand.add(`剪切了组件`,[psCommand.remove(scope.parentList, scope.parentList.indexOf(scope.option))]);
+                rootScope.$broadcast(`freeboard:changed`);
+              });
+            }
+          },{
+            name : `复制`,
+            onclick : function(e){
+              scope.$apply(()=>{
+
+              })
+            }
+          }];
         function each(arr, callback){
           arr = arr || [];
           for(var i = 0;i<arr.length; i++ ){
@@ -51,46 +92,6 @@
             y : y + dom.clientHeight + dom.clientTop + 5
           }
         }
-        let iteminner = document.createElement(`div`),
-          attrs,
-          upper = scope.option.type.substring(0,1).toUpperCase() + scope.option.type.substring(1),
-          el = document.createElement(`free-comp-${scope.option.type}`),
-          option = document.createElement(`div`),
-          head = document.createElement(`div`),
-          colHead = document.createElement(`col-head`),
-          modal = document.createElement(`ps-modal`),
-          point,
-          buttons = [{
-            name : `编辑`,
-            onclick : function(e){
-              scope.$apply(()=>{
-                $append(document.body, modal);
-              })
-            }
-          },{
-            name : `删除`,
-            onclick : function(e){
-              scope.$apply(() => {
-                psCommand.add([psCommand.remove(scope.parentList, scope.parentList.indexOf(scope.option))]);
-                rootScope.$broadcast(`freeboard:changed`);
-              })
-            }
-          },{
-            name : `剪切`,
-            onclick : function(e){
-              scope.$apply(() => {
-                psCommand.add([psCommand.remove(scope.parentList, scope.parentList.indexOf(scope.option))]);
-                rootScope.$broadcast(`freeboard:changed`);
-              });
-            }
-          },{
-            name : `复制`,
-            onclick : function(e){
-              scope.$apply(()=>{
-
-              })
-            }
-          }];
         modal.setAttribute(`data-properties`, `properties`);
         modal.setAttribute(`data-on-submit`, `submit(d)`);
         modal.setAttribute(`data-on-cancel`, `cancel()`);

@@ -2,10 +2,11 @@
 ></config>
 <script type="text/javascript">
   export default function(location,rootScope){
-    let commands = [], index = -1;
+    let commands = [], waitings = [],index = -1;
     return {
-      add(arr){
-        index = commands.push(arr);
+      add(name, arr){
+        waitings = [];
+        index = commands.push([name, arr]) - 1;
       },
       append(parentlist, item){
         let cmd = [
@@ -37,7 +38,7 @@
             item = parentlist.splice(num, 1);
           },
           function(){
-            parentlist.splice(num, 1, item);
+            parentlist.splice(num, 1, item[0]);
           }
         ];
         cmd[0]();
@@ -56,23 +57,34 @@
         return cmd;
       },
       forward(){
-        if(index < commands.length - 1){
-          let cmd = commands[index++];
-          for(var i = 0; i < cmd.length; i++){
-            cmd[i][0]();
+        if(waitings.length > 0){
+          index++;
+          let cmd = waitings.shift();
+          commands.push(cmd);
+          for(var i = 0; i < cmd[1].length; i++){
+            cmd[1][i][0]();
           }
         }
       },
       back(){
-        if(index > 1){
-          let cmd = commands[index++];
-          for(var i = 0; i < cmd.length; i++){
-            cmd[i][1]();
+        debugger;
+        if(commands.length > 0){
+          index--;
+          let cmd = commands.pop();
+          waitings.push(cmd);
+          for(var i = 0; i < cmd[1].length; i++){
+            cmd[1][i][1]();
           }
         }
       },
+      allCommands(){
+        return commands.concat(waitings);
+      },
       commands(){
-        return conmmands;
+        return commands;
+      },
+      waitings(){
+        return waitings;
       }
     };
   }
