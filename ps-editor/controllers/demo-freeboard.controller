@@ -37,16 +37,20 @@
         }]
       }]
     }
-    if(dt){
-      try{
-        obj = JSON.parse(dt)
-      } catch(e){
-        obj = []
-      } finally {
-        scope.options = obj.data || [];
-        scope.setting = { attributes : obj.setting || {} } ;
+    timeout(()=> {
+      if(dt){
+        try{
+          obj = JSON.parse(dt)
+        } catch(e){
+          obj = []
+        } finally {
+          scope.options = [];
+          scope.setting = { attributes : {} }
+          //scope.options = obj.data || [];
+          //scope.setting = { attributes : obj.setting || {} } ;
+        }
       }
-    }
+    }, 1000)
   }
 </script>
 <style type="less">

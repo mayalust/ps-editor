@@ -38,10 +38,13 @@
             })
           }
         }];
+        scope.$watch("parentList", (n,o,s)=>{
+          if(typeof n !== undefined){
+            element[0].__parentList__ = scope.parentList;
+          }
+        });
         element[0].__isColEnd__ = true;
-        element[0].__parentList__ = scope.parentList;
         element[0].oncontextmenu = function(e){
-          console.log(e);
           element[0].setAttribute("class", "col-end highlight");
           e.preventDefault();
           widget.createDrop({
