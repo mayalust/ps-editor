@@ -5,6 +5,7 @@
     <free-board-editor
         data-setting="setting"
         data-options="options"
+        data-cotree="cotree"
         data-on-save="onSave(d)">
     </free-board-editor>
   </div>
@@ -14,6 +15,27 @@
     let storage = window.localStorage, dt = storage["freeboardView"], obj;
     scope.onSave = function(d){
       storage["freeboardView"] = d;
+    }
+    scope.cotree = {
+      children : [{
+        abspath : "",
+        name : 'common',
+        ext : "",
+        children : [{
+          abspath : "/free-comp-mm.component",
+          ext : "component",
+          name : "abc"
+        }]
+      },{
+        name : 'project',
+        ext : "",
+        abspath : "",
+        children : [{
+          abspath : "/free-comp-nn.component",
+          ext : "component",
+          name : "edf"
+        }]
+      }]
     }
     if(dt){
       try{

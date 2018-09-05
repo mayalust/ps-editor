@@ -135,7 +135,7 @@
         function find(arr, callback){
           if(arr){
             for(var i = 0; i < arr.length; i++){
-              if(callback(arr[i]), i){
+              if(callback(arr[i], i)){
                 return arr[i];
               }
             }
@@ -144,9 +144,14 @@
         function extendChildren(a, b){
           for(let i = 0; i < b.length; i++){
             let m = find(a, (n)=>{
+              console.log(n.name == b[i].name);
               return n.name == b[i].name;
             });
-            m ? push.apply(m.children, b[i].children) : m.push(b[i]);
+            console.log(m);
+            if(m){
+              console.log(i);
+            }
+            m ? push.apply(m.children, b[i].children) : a.push(b[i]);
           }
         }
         psCommand.init();
