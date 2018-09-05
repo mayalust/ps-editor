@@ -1,8 +1,8 @@
 {
   "name": "ps-editor",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "ps-editor",
-  "main": "index.js",
+  "main": "./ps-editor/output.js",
   "scripts": {
     "init": "smart-angular init",
     "dev": "smart-angular dev",
@@ -18,7 +18,7 @@
     "url": "https://github.com/mayalust/ps-editor/issues"
   },
   "homepage": "https://github.com/mayalust/ps-editor#readme",
-  "dependencies": {
+  "devDependencies": {
     "proudsmart-tree": "^1.0.41",
     "ps-ultility": "^1.0.15",
     "smart-angular": "^1.0.59"
