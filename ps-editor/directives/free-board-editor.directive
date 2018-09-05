@@ -58,6 +58,7 @@
         onSave : "&"
       },
       link(scope,element,attr){
+        const push = Array.prototype.push;
         let storage = window.localStorage,
           modal = document.createElement(`ps-modal`);
         modal.setAttribute(`data-option`, `setting`);
@@ -131,11 +132,28 @@
           }
           return false
         }
+        function find(arr, callback){
+          if(arr){
+            for(var i = 0; i < arr.length; i++){
+              if(callback(arr[i]), i){
+                return arr[i];
+              }
+            }
+          }
+        }
+        function extendChildren(a, b){
+          for(let i = 0; i < b.length; i++){
+            let m = find(a, (n)=>{
+              return n.name == b[i].name;
+            });
+            m ? push.apply(m.children, b[i].children) : m.push(b[i]);
+          }
+        }
         psCommand.init();
         $render();
         scope.dirty = false;
         scope.tools = comptree;
-        extend(comptree.children, scope.cotree ? scope.cotree.children : {});
+        extendChildren(comptree.children, scope.cotree ? scope.cotree.children : []);
         scope.psCommand = psCommand;
         scope.history = function(e){
           if(scope.commands.length == 0 &&  scope.waitings == 0){
