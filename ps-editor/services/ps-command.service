@@ -14,6 +14,9 @@
     }
     return {
       dirty : false,
+      init(){
+        commands = [], waitings = [],index = -1;
+      },
       add(name, arr){
         waitings = [];
         index = commands.push([name, arr]) - 1;

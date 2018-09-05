@@ -1,6 +1,7 @@
 <config injector="psCommand,$rootScope,$timeout" type="factory"
 ></config>
 <script type="text/javascript">
+  import ultiltiy from "ps-ultility";
   export default function(psCommand,rootScope,timeout){
     return function(target, option, parentList, dom){
       let replacer = document.createComment(`移动节点`),
@@ -15,23 +16,31 @@
         helper.style.left = `${x}px`;
       }
       function clone(obj){
-        return JSON.parse(JSON.stringify(obj));
+        return ultiltiy.remove$$hashKey(JSON.parse(JSON.stringify(obj)));
       }
       function onmousedown(e){
-        parent && parent.replaceChild(replacer, dom);
-        document.onmouseup = onmouseup;
-        rootScope.$broadcast(`freeboard:changed`)
-        document.body.append(helper);
-        setPos(e.pageX - offset[0], e.pageY - offset[1]);
-        timeout(() => {
-          freeboard.setAttribute(`class`, `mousedown`);
-        });
-        target.onmousedown = null;
-        window.onmousemove = function(e){
+        console.log("mousedown");
+        if(e.button == 0){
+          parent && parent.replaceChild(replacer, dom);
+          document.onmouseup = onmouseup;
+          rootScope.$broadcast(`freeboard:changed`)
+          document.body.append(helper);
           setPos(e.pageX - offset[0], e.pageY - offset[1]);
+          timeout(() => {
+            freeboard.setAttribute(`class`, `mousedown`);
+          });
+          target.onmousedown = null;
+          window.onmousemove = function(e){
+            setPos(e.pageX - offset[0], e.pageY - offset[1]);
+          }
         }
       }
       function onmouseup(e){
+        console.log("mouseup");
+        window.onmousemove = null;
+        timeout(() => {
+          freeboard.removeAttribute(`class`);
+        });
         rootScope.$apply(() => {
           let domtarget = e.target, list;
           if(domtarget.__isColEnd__ == true){
@@ -63,12 +72,10 @@
           parent && parent.replaceChild(dom, replacer)
           document.onmouseup = null;
           target.onmousedown = onmousedown;
-          freeboard.removeAttribute(`class`);
           timeout(() => {
             rootScope.$broadcast(`freeboard:changed`)
           }, 200);
           helper.remove();
-          window.onmousemove = null;
         });
       }
     };

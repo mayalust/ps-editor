@@ -1,11 +1,12 @@
-<config injector="$timeout"
+<config injector="$timeout,$rootScope,psCommand"
 ></config>
 <template>
   <div class="col-end">
   </div>
 </template>
 <script type="text/javascript">
-  export default function(timeout){
+  import widget from "../toolkit/widget.js";
+  export default function(timeout,rootScope,psCommand){
     return {
       scope : {
         option : "=",
@@ -13,8 +14,43 @@
       },
       require : "?ngModel",
       link(scope, element, attr, ngModel){
+        let storage = window.localStorage,
+          buttons = [{
+          name : `粘贴`,
+          onclick : function(e){
+            scope.$apply(() => {
+              let paste;
+              try {
+                paste = JSON.parse(storage[`componentCopy`]);
+              } catch(e) {
+                console.error(e);
+                console.error(storage[`componentCopy`]);
+                paste = {
+                  type : "exception"
+                };
+              } finally {
+                element[0].setAttribute("class", "col-end");
+                psCommand.add(`粘贴组件[${paste.type}]`, [
+                  psCommand.append(scope.parentList, paste)
+                ]);
+                rootScope.$broadcast(`freeboard:changed`);
+              }
+            })
+          }
+        }];
         element[0].__isColEnd__ = true;
         element[0].__parentList__ = scope.parentList;
+        element[0].oncontextmenu = function(e){
+          console.log(e);
+          element[0].setAttribute("class", "col-end highlight");
+          e.preventDefault();
+          widget.createDrop({
+            x : e.clientX,
+            y : e.clientY
+          }, buttons).on("close", function(e){
+            element[0].setAttribute("class", "col-end");
+          });
+        }
         function render(){
           element[0].style.height = "auto";
           timeout(() => {

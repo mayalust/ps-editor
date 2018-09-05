@@ -7,14 +7,17 @@
 </template>
 <script type="text/javascript">
   import widget from "../toolkit/widget.js";
+  import ultility from "ps-ultility";
   export default function(q,timeout,rootScope,compile,psDrag,psCommand,properties){
     return {
       scope : {
+        setting : `=`,
         option : `=`,
         parentList : `=`
       },
       link(scope, element, attr){
         let tar = element[0],
+          storage = window.localStorage,
           iteminner = document.createElement(`div`),
           attrs,
           upper = scope.option.type.substring(0,1).toUpperCase() + scope.option.type.substring(1),
@@ -29,12 +32,14 @@
             onclick : function(e){
               scope.$apply(()=>{
                 $append(document.body, modal);
+                iteminner.setAttribute("class", "item-inner");
               })
             }
           },{
             name : `删除`,
             onclick : function(e){
               scope.$apply(() => {
+                iteminner.setAttribute("class", "item-inner");
                 psCommand.add(`删除了组件`,[psCommand.remove(scope.parentList, scope.parentList.indexOf(scope.option))]);
                 rootScope.$broadcast(`freeboard:changed`);
               })
@@ -43,6 +48,8 @@
             name : `剪切`,
             onclick : function(e){
               scope.$apply(() => {
+                iteminner.setAttribute("class", "item-inner");
+                storage['componentCopy'] = ultility.remove$$hashKey(JSON.stringify(scope.option));
                 psCommand.add(`剪切了组件`,[psCommand.remove(scope.parentList, scope.parentList.indexOf(scope.option))]);
                 rootScope.$broadcast(`freeboard:changed`);
               });
@@ -51,7 +58,8 @@
             name : `复制`,
             onclick : function(e){
               scope.$apply(()=>{
-
+                iteminner.setAttribute("class", "item-inner");
+                storage['componentCopy'] = ultility.remove$$hashKey(JSON.stringify(scope.option));
               })
             }
           }];
@@ -109,11 +117,25 @@
         $append(tar, iteminner);
         option.onmousedown = function(e){
           e.stopPropagation();
-          widget.createDrop(calcBasePoint(e.target), buttons);
+          iteminner.setAttribute("class", "item-inner highlight");
+          widget.createDrop(calcBasePoint(e.target), buttons)
+            .on("close", function(e){
+            iteminner.setAttribute("class", "item-inner");
+          });
         }
         scope.properties = properties.get(`freeComp${upper}`) || [];
         attrs = properties.getAllAttrs(`freeComp${upper}`) || {};
         scope.option.attributes = scope.option.attributes || {};
+        head.oncontextmenu = function(e){
+          iteminner.setAttribute("class", "item-inner highlight");
+          e.preventDefault();
+          widget.createDrop({
+            x : e.clientX,
+            y : e.clientY
+          }, buttons).on("close", function(e){
+            iteminner.setAttribute("class", "item-inner");
+          });
+        }
         for(var i in scope.option.attributes){
           scope.option.attributes[i] = scope.option.attributes[i] || attrs[i];
         }
@@ -154,7 +176,6 @@
                   }
                 })
               ]) : {};
-          console.log(scope.option);
         }
         scope.cancel = function(){
           console.log(`cancel`);

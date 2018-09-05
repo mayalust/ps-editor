@@ -280,7 +280,7 @@ function info(msg){
   console.info.apply(console, arguments);
 }
 function createDrop(point, config, align, highlight){
-  var events, buttonWrap = createElement("div", null, "button-wrap", null),
+  var events = {}, buttonWrap = createElement("div", null, "button-wrap", null),
     widget = createElement("div", null, "widget-bg", null),
     fragment = createDocumentFragment();
   align = align || "left";
@@ -314,6 +314,7 @@ function createDrop(point, config, align, highlight){
   })
   widget.onclick = function(e){
     if(e.eventPhase === 2){
+      events['close'] && events['close'](e);
       destroy();
     }
   }

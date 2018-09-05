@@ -1,0 +1,258 @@
+<config injector="$rootScope,$location,$q,$timeout,$compile,psCommand"
+></config>
+<template>
+  <div>
+    <div class="toppart">
+      <button ng-disabled="!psCommand.dirty"
+              ng-click="save()"
+              class="btn-xs btn-success pull-right">
+        保存(ctrl+S)
+      </button>
+      <button ng-disabled="waitings.length + commands.length == 0"
+              ng-click="history($event)"
+              class="btn-xs btn-default pull-right">
+        历史
+      </button>
+      <button ng-disabled="waitings.length == 0"
+              ng-click="redo()"
+              class="btn-xs btn-default pull-right">
+        重做(ctrl+shift+Z)
+      </button>
+      <button ng-disabled="commands.length == 0"
+              ng-click="undo()"
+              class="btn-xs btn-default pull-right">
+        撤销(ctrl+Z)
+      </button>
+      <button ng-click="preview()"
+              class="btn-xs btn-info pull-right">
+        预览(ctrl+P)
+      </button>
+      <button ng-click="settingFn()"
+              class="btn-xs btn-default pull-right">
+        全局设置
+      </button>
+    </div>
+    <div class="leftpart">
+      <free-board-left
+          data-tools="tools">
+      </free-board-left>
+    </div>
+    <div class="rightpart">
+      <div class="free-board-wrap" ng-class="setting.cls">
+        <free-board
+            data-options="options">
+        </free-board>
+      </div>
+    </div>
+  </div>
+</template>
+<script type="text/javascript">
+  import { createDrop } from "../toolkit/widget.js";
+  import ultility from "ps-ultility";
+  export default function(rootScope,location,q,timeout,compile,psCommand,props,comptree){
+    return {
+      scope : {
+        cotree : "=",
+        setting : "=",
+        options : "=",
+        onSave : "&"
+      },
+      link(scope,element,attr){
+        let storage = window.localStorage,
+          modal = document.createElement(`ps-modal`);
+        modal.setAttribute(`data-option`, `setting`);
+        modal.setAttribute(`data-properties`, `properties`);
+        modal.setAttribute(`data-on-submit`, `submit(d)`);
+        modal.setAttribute(`data-on-cancel`, `cancel()`);
+        scope.properties = [{
+          label : "基本设定",
+          attributes : {
+            viewTitle : ["视图名称", "input", ""],
+            description : ["视图描述", "input", ""],
+            cls : ["样式类", "input", ""]
+          }
+        }];
+        for(var i = 0; i < scope.properties.length; i++){
+          for(var j in scope.properties[i].attributes){
+            scope.properties[i].attributes[j][2] = scope.setting.attributes[j] || scope.properties[i].attributes[j][2];
+          }
+        }
+        function extend(a, b){
+          for(var i in b){
+            a[i] = b[i];
+          }
+          return a;
+        }
+        function $append(target, dom){
+          target.appendChild(dom);
+          compile(dom)(scope);
+        }
+        function clone(obj){
+          return JSON.parse(ultility.remove$$hashKey(JSON.stringify(obj)));
+        }
+        function $render(){
+          scope.commands = psCommand.commands();
+          scope.waitings = psCommand.waitings();
+        }
+        function calcBasePoint(dom){
+          var target = dom,
+            x = target.offsetLeft,
+            y = target.offsetTop;
+          while(target = target.offsetParent){
+            x += target.offsetLeft + target.clientLeft;
+            y += target.offsetTop + target.clientTop - target.scrollTop;
+          }
+          return {
+            x : x + dom.clientWidth,
+            y : y + dom.clientHeight + dom.clientTop
+          }
+        }
+        function getPropObj(){
+          var obj = {};
+          for(var i = 0; i < scope.properties.length; i++){
+            for(var j in scope.properties[i].attributes){
+              obj[j] = scope.properties[i].attributes[j][2];
+            }
+          }
+          return obj;
+        }
+        function checkDirty(){
+          for(var i = 0; i < scope.properties.length; i++){
+            for(var j in scope.properties[i].attributes){
+              if(scope.setting.attributes[j] != scope.properties[i].attributes[j][2]){
+                return true;
+              }
+            }
+          }
+          return false
+        }
+        psCommand.init();
+        $render();
+        scope.dirty = false;
+        scope.tools = comptree;
+        extend(comptree.children, scope.cotree ? scope.cotree.children : {});
+        scope.psCommand = psCommand;
+        scope.history = function(e){
+          if(scope.commands.length == 0 &&  scope.waitings == 0){
+            return null;
+          }
+          $render();
+          let historys = [['打开视图']].concat(scope.commands).concat(scope.waitings).map((n, i) => {
+              return {
+                name : n[0],
+                onclick : function(){
+                  scope.$apply(() => {
+                    psCommand.moveTo(i-1);
+                    $render();
+                    rootScope.$broadcast(`freeboard:changed`);
+                  })
+                }
+              }
+            }),
+            offsetLeft = 200,
+            offset = calcBasePoint( e.currentTarget ),
+            ins = createDrop(offset, historys, "right", scope.commands.length);
+        }
+        scope.undo = function(){
+          psCommand.back();
+          rootScope.$broadcast(`freeboard:changed`);
+          $render();
+        }
+        scope.redo = function(){
+          psCommand.forward();
+          rootScope.$broadcast(`freeboard:changed`);
+          $render();
+        }
+        scope.save = function(){
+          let obj = ultility.remove$$hashKey(JSON.stringify({
+            setting : scope.setting.attributes,
+            data : scope.options
+          }));
+          scope.psCommand.dirty = false;
+          scope.onSave({d:obj});
+        }
+        scope.settingFn = function(){
+          $append(document.body, modal);
+        }
+        scope.submit = function(d){
+          let isDirty = checkDirty(),
+            newObj = isDirty
+              ? psCommand.add(`编辑了全局属性`, [
+                psCommand.update(scope, "setting", getPropObj(), (n, val) => {
+                  if(val == undefined){
+                    return n.attributes;
+                  } else {
+                    n.attributes = val;
+                  }
+                })
+              ]) : {};
+        }
+        scope.preview = function(){
+          scope.save();
+          location.path("preview");
+        }
+        rootScope.$on(`freeboard:col-adjusted`, () => {
+          $render();
+        });
+        document.onkeydown = function(e){
+          scope.$apply(()=>{
+            if(e.key === "s" && e.metaKey){
+              e.preventDefault();
+              scope.psCommand.dirty && scope.save();
+            } else if(e.key === "z" && e.metaKey && !e.shiftKey){
+              e.preventDefault();
+              scope.undo();
+            } else if(e.key === "z" && e.metaKey && e.shiftKey){
+              e.preventDefault();
+              scope.redo();
+            } else if(e.key === "p" && e.metaKey){
+              e.preventDefault();
+              scope.preview();
+            }
+          });
+        }
+      }
+    }
+  };
+</script>
+<style type="less">
+  .toppart{
+    position : absolute;
+    height : 30px;
+    width : 100%;
+    background-color : #337ab7;
+    .btn-xs {
+      margin : 3px 10px 0 0;
+      &[disabled]{
+        color : #999;
+        background-color : #ddd;
+        &:hover{
+          background-color : #ddd;
+        }
+      }
+    }
+  }
+  .leftpart{
+    position : absolute;
+    width : 250px;
+    top : 30px;
+    bottom : 0;
+    left : 0;
+  }
+  .rightpart{
+    position : absolute;
+    right : 0;
+    top : 30px;
+    bottom : 0;
+    left : 250px;
+    overflow-x : hidden;
+    overflow-y : auto;
+    .free-board-wrap{
+      position : absolute;
+      top : 0;
+      bottom : 0;
+      left : 0;
+      right : 0;
+    }
+  }
+</style>

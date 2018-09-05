@@ -1,0 +1,40 @@
+<config injector="$q, $compile, $timeout"
+></config>
+<template>
+  <div>
+    <div class="loading" ng-if="loading">
+      <div class="text">加载中请稍后...</div>
+    </div>
+  </div>
+</template>
+<script type="text/javascript">
+  export default function(q, compile, timeout){
+    return {
+      scope : {
+        loading : "="
+      },
+      link(scope, element, attr){
+
+      }
+    }
+  }
+</script>
+<style type="less">
+  .loading{
+    position : absolute;
+    color : #666;
+    background-color : rgba(0,0,0,.1);
+    top : 0;
+    left :0;
+    right : 0;
+    bottom : 0;
+    margin : auto;
+    .text{
+      position : absolute;
+      top: 50%;
+      text-align : center;
+      width : 100%;
+      margin-top : -10px;
+    }
+  }
+</style>

@@ -2,6 +2,9 @@
 ></config>
 <template>
   <div id="freeboard">
+    <free-board-loading
+        data-loading="loading"
+    ></free-board-loading>
     <div class="col-contain">
       <ps-tool
           ng-repeat="option in options"
@@ -22,7 +25,12 @@
         options : "="
       },
       link(scope, element, attr){
-
+        scope.loading = true;
+        scope.$watch("options", (n, o, s) => {
+          if(n !== undefined){
+            scope.loading = false;
+          }
+        })
       }
     }
   }

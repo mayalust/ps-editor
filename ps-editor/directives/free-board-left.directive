@@ -31,37 +31,46 @@
         let tree = document.getElementById("tree"),
           regex = /[\\\/](?:free\-comp\-)?([\w-]*)\.[\w-]*$/g;
         scope.list = [];
-        pstree(tree, {
-          showline : true,
-          animate : false,
-          data : scope.tools.children,
-          themes : `show-line folder-pull-right`,
-          on : {
-            init : function(event){
-              var group = this.createGroup("group");
-              if(this.ext.length == 0){
-                this.label = this.name;
-                this.icon = "glyphicon glyphicon-folder-open";
-              } else {
-                regex.lastIndex = 0;
-                var moveBtn = document.createElement("free-board-drag-btn");
-                var match = regex.exec(this.abspath);
-                this.label = match[1];
-                scope.list.push({
-                  type : match[1]
-                })
-                moveBtn.setAttribute(`class`, `btn-xs btn-primary`);
-                moveBtn.setAttribute(`data-option`, `list[${scope.list.length - 1}]`);
-                moveBtn.style.float = "right";
-                this.icon = "glyphicon glyphicon-file";
-                group.appendChild(moveBtn);
-                this.render(group);
+        scope.$watch("tools.children", (n, o, s) => {
+          if(n){
+            pstree(tree, {
+              showline : true,
+              animate : false,
+              data : n,
+              themes : `show-line folder-pull-right`,
+              on : {
+                init : function(event){
+                  var group = this.createGroup(`group`);
+                  if(this.ext.length == 0){
+                    this.label = this.name;
+                    this.icon = `glyphicon glyphicon-folder-open`;
+                  } else {
+                    regex.lastIndex = 0;
+                    var moveBtn = document.createElement(`free-board-drag-btn`);
+                    var match = regex.exec(this.abspath);
+                    this.label = match[1];
+                    scope.list.push({
+                      type : match[1]
+                    })
+                    moveBtn.setAttribute(`class`, `btn-xs btn-primary`);
+                    moveBtn.setAttribute(`data-option`, `list[${scope.list.length - 1}]`);
+                    moveBtn.style.float = "right";
+                    this.icon = "glyphicon glyphicon-file";
+                    group.appendChild(moveBtn);
+                    this.render(group);
+                  }
+                },
+                click : function(event){
+                  if(this.ext.length == 0){
+                    event.preventDefault();
+                    this.toggle();
+                  }
+                }
               }
-
-            }
+            });
+            compile(tree)(scope);
           }
-        });
-        compile(tree)(scope);
+        })
         scope.colData = {
           type : `row`,
           children : [{
@@ -86,7 +95,7 @@
     user-select:none;
     position : absolute;
     left : 0;
-    top : 30px;
+    top : 0px;
     text-align : left;
     bottom : 0;
     right : 0;
@@ -94,8 +103,8 @@
     border-right : 1px dashed #aaa;
     .main-title {
       width : 100%;
-      background-color : #337ab7;
-      border-bottom : 1px solid #666;
+      background-color : #666;
+      border-bottom : 1px solid #888;
       color : #fff;
       padding : 5px;
     }
