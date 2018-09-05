@@ -16,28 +16,28 @@
     scope.onSave = function(d){
       storage["freeboardView"] = d;
     }
-    scope.cotree = {
-      children : [{
-        abspath : "",
-        name : 'common',
-        ext : "",
-        children : [{
-          abspath : "/free-comp-mm.component",
-          ext : "component",
-          name : "abc"
-        }]
-      },{
-        name : 'project',
-        ext : "",
-        abspath : "",
-        children : [{
-          abspath : "/free-comp-nn.component",
-          ext : "component",
-          name : "edf"
-        }]
-      }]
-    }
     timeout(()=> {
+      scope.cotree = {
+        children : [{
+          abspath : "",
+          name : 'common',
+          ext : "",
+          children : [{
+            abspath : "/free-comp-mm.component",
+            ext : "component",
+            name : "abc"
+          }]
+        },{
+          name : 'project',
+          ext : "",
+          abspath : "",
+          children : [{
+            abspath : "/free-comp-nn.component",
+            ext : "component",
+            name : "edf"
+          }]
+        }]
+      }
       if(dt){
         try{
           obj = JSON.parse(dt)

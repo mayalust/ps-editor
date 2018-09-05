@@ -28,12 +28,14 @@
         tools : `=`
       },
       link(scope, element, attr){
-        let tree = document.getElementById("tree"),
+        let ins, tree = document.getElementById("tree"),
           regex = /[\\\/](?:free\-comp\-)?([\w-]*)\.[\w-]*$/g;
         scope.list = [];
-        scope.$watch("tools.children", (n, o, s) => {
+        scope.$watch("tools", (n, o, s) => {
           if(n){
-            pstree(tree, {
+            ins ? ins.destroy() : null;
+            n = n.children;
+            ins = pstree(tree, {
               showline : true,
               animate : false,
               data : n,

@@ -147,7 +147,6 @@
               console.log(n.name == b[i].name);
               return n.name == b[i].name;
             });
-            console.log(m);
             if(m){
               console.log(i);
             }
@@ -158,7 +157,12 @@
         $render();
         scope.dirty = false;
         scope.tools = comptree;
-        extendChildren(comptree.children, scope.cotree ? scope.cotree.children : []);
+        scope.$watch("cotree", (n,o,s)=>{
+          if(typeof n != `undefined`){
+            let m = extendChildren(comptree.children, n ? scope.cotree.children : []);
+            scope.tools = extend({},scope.tools);
+          }
+        })
         scope.psCommand = psCommand;
         scope.history = function(e){
           if(scope.commands.length == 0 &&  scope.waitings == 0){
