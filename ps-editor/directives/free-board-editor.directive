@@ -141,6 +141,11 @@
             }
           }
         }
+        function pushBack(a, b){
+          if(typeof b !== "undefined"){
+            push.apply(a, b);
+          }
+        }
         function extendChildren(a, b){
           for(let i = 0; i < b.length; i++){
             let m = find(a, (n)=>{
@@ -148,9 +153,11 @@
               return n.name == b[i].name;
             });
             if(m){
-              console.log(i);
+              m.children =  m.children || [];
+              pushBack(m.children, b[i].children)
+            } else {
+              a.push(b[i]);
             }
-            m ? push.apply(m.children, b[i].children) : a.push(b[i]);
           }
         }
         psCommand.init();
