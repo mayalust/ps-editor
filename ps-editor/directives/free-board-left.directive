@@ -43,16 +43,14 @@
               on : {
                 init : function(event){
                   var group = this.createGroup(`group`);
-                  if(this.ext.length == 0){
-                    this.label = this.name;
-                    this.icon = `glyphicon glyphicon-folder-open`;
-                  } else {
+                  if(this.ext && this.ext.length > 0){
                     regex.lastIndex = 0;
                     var moveBtn = document.createElement(`free-board-drag-btn`);
                     var match = regex.exec(this.abspath);
-                    this.label = match[1];
+                    this.label = this.title || this.name;
                     scope.list.push({
-                      type : match[1]
+                      type : match[1],
+                      attributes : this.attributes
                     })
                     moveBtn.setAttribute(`class`, `btn-xs btn-primary`);
                     moveBtn.setAttribute(`data-option`, `list[${scope.list.length - 1}]`);
@@ -60,6 +58,9 @@
                     this.icon = "glyphicon glyphicon-file";
                     group.appendChild(moveBtn);
                     this.render(group);
+                  } else {
+                    this.label = this.title || this.name;
+                    this.icon = `glyphicon glyphicon-folder-open`;
                   }
                 },
                 click : function(event){
