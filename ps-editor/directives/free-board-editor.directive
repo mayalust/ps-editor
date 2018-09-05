@@ -72,10 +72,14 @@
             cls : ["样式类", "input", ""]
           }
         }];
-        scope.setting = scope.setting || {};
+        scope.setting = scope.setting || {
+          attributes : {}
+        };
         for(var i = 0; i < scope.properties.length; i++){
           for(var j in scope.properties[i].attributes){
-            scope.properties[i].attributes[j][2] = scope.setting.attributes[j] || scope.properties[i].attributes[j][2];
+            scope.properties[i].attributes[j][2] = scope.setting.attributes
+              ? (scope.setting.attributes[j] || scope.properties[i].attributes[j][2)
+              : scope.properties[i].attributes[j][2];
           }
         }
         function extend(a, b){
