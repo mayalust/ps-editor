@@ -3,6 +3,7 @@
 <template>
   <div>
     <div class="toppart">
+      <div class="title" ng-bind="'视图名称:' + setting.attributes.viewTitle"></div>
       <button ng-disabled="!psCommand.dirty"
               ng-click="save()"
               class="btn-xs btn-success pull-right">
@@ -34,11 +35,13 @@
     </div>
     <div class="leftpart">
       <free-board-left
+          data-on-preview-tree="onPrevTree(d)"
+          data-on-delete="onDelete(d)"
           data-tools="tools">
       </free-board-left>
     </div>
     <div class="rightpart">
-      <div class="free-board-wrap" ng-class="setting.cls">
+      <div class="free-board-wrap" ng-class="setting.attributes.cls">
         <free-board
             data-options="options">
         </free-board>
@@ -55,7 +58,10 @@
         cotree : "=",
         setting : "=",
         options : "=",
-        onSave : "&"
+        onSave : "&",
+        onDel : "&",
+        onPreview : "&",
+        onPreviewTree : "&"
       },
       link(scope,element,attr){
         const push = Array.prototype.push;
@@ -76,11 +82,20 @@
         scope.setting = scope.setting || {
           attributes : {}
         };
+        scope.setting.attributes = {};
+        scope.onDelete = function(d){
+          scope.onDel({d:d});
+        }
+        scope.onPrevTree = function(d){
+          scope.onPreviewTree({d:d});
+        }
         for(var i = 0; i < scope.properties.length; i++){
           for(var j in scope.properties[i].attributes){
-            scope.properties[i].attributes[j][2] = scope.setting.attributes
-              ? (scope.setting.attributes[j] || scope.properties[i].attributes[j][2])
-              : scope.properties[i].attributes[j][2];
+            if(scope.setting.attributes.hasOwnProperty(j)){
+              scope.properties[i].attributes[j][2] = scope.setting.attributes[j];
+            } else {
+              scope.setting.attributes[j] = scope.properties[i].attributes[j][2];
+            }
           }
         }
         function extend(a, b){
@@ -142,7 +157,7 @@
           }
         }
         function pushBack(a, b){
-          if(typeof b !== "undefined"){
+          if(typeof b !== `undefined`){
             push.apply(a, b);
           }
         }
@@ -164,7 +179,7 @@
         $render();
         scope.dirty = false;
         scope.tools = comptree;
-        scope.$watch("cotree", (n,o,s)=>{
+        scope.$watch(`cotree`, (n,o,s)=>{
           if(typeof n != `undefined`){
             let m = extendChildren(comptree.children, n ? scope.cotree.children : []);
             scope.tools = extend({},scope.tools);
@@ -190,7 +205,7 @@
             }),
             offsetLeft = 200,
             offset = calcBasePoint( e.currentTarget ),
-            ins = createDrop(offset, historys, "right", scope.commands.length);
+            ins = createDrop(offset, historys, `right`, scope.commands.length);
         }
         scope.undo = function(){
           psCommand.back();
@@ -217,7 +232,7 @@
           let isDirty = checkDirty(),
             newObj = isDirty
               ? psCommand.add(`编辑了全局属性`, [
-                psCommand.update(scope, "setting", getPropObj(), (n, val) => {
+                psCommand.update(scope, `setting`, getPropObj(), (n, val) => {
                   if(val == undefined){
                     return n.attributes;
                   } else {
@@ -227,8 +242,11 @@
               ]) : {};
         }
         scope.preview = function(){
-          scope.save();
-          location.path("preview");
+          let obj = ultility.remove$$hashKey(JSON.stringify({
+            setting : scope.setting.attributes,
+            data : scope.options
+          }));
+          scope.onPreview({d:obj});
         }
         rootScope.$on(`freeboard:col-adjusted`, () => {
           $render();
@@ -260,6 +278,12 @@
     height : 30px;
     width : 100%;
     background-color : #337ab7;
+    .title {
+      color : #fff;
+      float : left;
+      margin-left : 10px;
+      line-height : 30px;
+    }
     .btn-xs {
       margin : 3px 10px 0 0;
       &[disabled]{

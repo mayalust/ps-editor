@@ -11,7 +11,6 @@
   export default function(q,timeout,rootScope,compile,psDrag,psCommand,properties){
     return {
       scope : {
-        setting : `=`,
         option : `=`,
         parentList : `=`
       },
@@ -19,7 +18,6 @@
         let tar = element[0],
           storage = window.localStorage,
           iteminner = document.createElement(`div`),
-          attrs,
           upper = scope.option.type.substring(0,1).toUpperCase() + scope.option.type.substring(1),
           el = document.createElement(`free-comp-${scope.option.type}`),
           option = document.createElement(`div`),
@@ -124,7 +122,6 @@
           });
         }
         scope.properties = properties.get(`freeComp${upper}`) || [];
-        attrs = properties.getAllAttrs(`freeComp${upper}`) || {};
         scope.option.attributes = scope.option.attributes || {};
         head.oncontextmenu = function(e){
           iteminner.setAttribute("class", "item-inner highlight");
@@ -136,19 +133,19 @@
             iteminner.setAttribute("class", "item-inner");
           });
         }
-        for(var i in scope.option.attributes){
-          scope.option.attributes[i] = scope.option.attributes[i] || attrs[i];
-        }
         for(var i = 0; i < scope.properties.length; i++){
           for(var j in scope.properties[i].attributes){
-            scope.properties[i].attributes[j][2] = scope.option.attributes[j];
+            if(scope.option.attributes.hasOwnProperty(j)){
+              scope.properties[i].attributes[j][2] = scope.option.attributes[j];
+            } else {
+              scope.option.attributes[j] = scope.properties[i].attributes[j][2];
+            }
           }
         }
         function checkDirty(){
           for(var i = 0; i < scope.properties.length; i++){
             for(var j in scope.properties[i].attributes){
               if(scope.option.attributes[j] != scope.properties[i].attributes[j][2]){
-                //scope.option.attributes[j] = scope.properties[i].attributes[j][2];
                 return true;
               }
             }

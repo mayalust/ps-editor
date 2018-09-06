@@ -25,7 +25,9 @@
   export default function(q,compile,timeout,psDrag){
     return {
       scope : {
-        tools : `=`
+        tools : `=`,
+        onPreviewTree : `&`,
+        onDelete : `&`
       },
       link(scope, element, attr){
         let ins, tree = document.getElementById("tree"),
@@ -45,8 +47,8 @@
                   var group = this.createGroup(`group`);
                   if(this.ext && this.ext.length > 0){
                     regex.lastIndex = 0;
-                    var moveBtn = document.createElement(`free-board-drag-btn`);
-                    var match = regex.exec(this.abspath);
+                    var moveBtn = document.createElement(`free-board-drag-btn`),
+                      match = regex.exec(this.abspath), editBtn;
                     this.label = this.title || this.name;
                     scope.list.push({
                       type : match[1],
@@ -57,6 +59,24 @@
                     moveBtn.style.float = "right";
                     this.icon = "glyphicon glyphicon-file";
                     group.appendChild(moveBtn);
+                    if(match[1] == "view"){
+                      timeout(() => {
+                        this.text.style.fontWeight = "bold";
+                        this.text.style.color = "#337ab7";
+                        this.text.style.textDecoration = "underline";
+                        this.text.onclick = e => {
+                          scope.onPreviewTree({d:this});
+                        }
+                      });
+                      editBtn = document.createElement(`button`);
+                      editBtn.innerHTML = "删除";
+                      editBtn.setAttribute(`class`,`btn-xs btn-default`);
+                      editBtn.style.float = "right";
+                      editBtn.onclick= e => {
+                        scope.onDelete({d:this});
+                      }
+                      group.appendChild(editBtn);
+                    }
                     this.render(group);
                   } else {
                     this.label = this.title || this.name;

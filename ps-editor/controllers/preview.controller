@@ -1,5 +1,4 @@
-<config defaultRouter = "true"
-    injector="$scope,$rootScope,$q,$timeout,psCommand"
+<config injector="$scope,$rootScope,$q,$timeout,psCommand"
 ></config>
 <template>
   <div>

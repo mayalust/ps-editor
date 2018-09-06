@@ -1,4 +1,5 @@
 <config injector="$scope,$rootScope,$q,$timeout,psCommand"
+        params="/:id?"
 ></config>
 <template>
   <div>
@@ -6,6 +7,9 @@
         data-setting="setting"
         data-options="options"
         data-cotree="cotree"
+        data-on-del="onDel(d)"
+        data-on-preview="onPreview(d)"
+        data-on-preview-tree="onPreviewTree(d)"
         data-on-save="onSave(d)">
     </free-board-editor>
   </div>
@@ -23,7 +27,8 @@
           name : 'common',
           ext : "",
           children : [{
-            abspath : "/free-comp-mm.component",
+            title : "v11",
+            abspath : "/free-comp-view.component",
             ext : "component",
             name : "abc"
           }]
@@ -32,11 +37,21 @@
           ext : "",
           abspath : "",
           children : [{
-            abspath : "/free-comp-nn.component",
+            title : "v22",
+            abspath : "/free-comp-view.component",
             ext : "component",
             name : "edf"
           }]
         }]
+      }
+      scope.onDel = function(d){
+        console.log(d);
+      }
+      scope.onPreview = function(d){
+        console.log(d);
+      }
+      scope.onPreviewTree = function(d){
+        console.log(d);
       }
       if(dt){
         try{
@@ -46,8 +61,6 @@
         } finally {
           scope.options = [];
           scope.setting = { attributes : {} }
-          //scope.options = obj.data || [];
-          //scope.setting = { attributes : obj.setting || {} } ;
         }
       }
     }, 1000)
