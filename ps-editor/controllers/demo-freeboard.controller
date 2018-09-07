@@ -48,7 +48,9 @@
         console.log(d);
       }
       scope.onPreview = function(d){
-        console.log(d);
+        storage['freeboardView'] = d;
+        var href = window.location.href.split("#")[0];
+        window.open(href + "#/preview");
       }
       scope.onPreviewTree = function(d){
         console.log(d);
@@ -59,8 +61,8 @@
         } catch(e){
           obj = []
         } finally {
-          scope.options = [];
-          scope.setting = { attributes : {} }
+          scope.options = obj.data || [];
+          scope.setting = { attributes : obj.setting || {} }
         }
       }
     }, 1000)

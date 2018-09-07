@@ -1,13 +1,16 @@
 <config injector="$q, $compile, $timeout"
 ></config>
 <template>
-  <div id="freeboard-preview">
-    <div class="col-contain">
-      <ps-tool-preview
-          ng-repeat="option in options"
-          data-parent-list="options"
-          data-option="option">
-      </ps-tool-preview>
+  <div class="free-board-wrap" ng-class="setting.cls">
+    <div id="freeboard"
+         class="preview">
+      <div class="col-contain">
+        <ps-tool-preview
+            ng-repeat="option in options"
+            data-parent-list="options"
+            data-option="option">
+        </ps-tool-preview>
+      </div>
     </div>
   </div>
 </template>
@@ -16,10 +19,11 @@
     return {
       scope : {
         preview : "=",
+        setting : "=",
         options : "="
       },
       link(scope, element, attr){
-
+        console.log(scope.setting);
       }
     }
   }
