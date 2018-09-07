@@ -50,7 +50,6 @@
         scope.$watch("option.attributes", (n, o, s) => {
           if(typeof n !== "undefined"){
             element[0].children[0].style.height = n.height ? n.height + "px" : "auto";
-            element[0].children[1].style.height = n.height ? n.height + "px" : "auto";
           }
         })
       }
