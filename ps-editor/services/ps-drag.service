@@ -3,43 +3,95 @@
 <script type="text/javascript">
   import ultiltiy from "ps-ultility";
   export default function(psCommand,rootScope,timeout){
-    return function(target, option, parentList, dom){
+    return function(target, option, parentList, dom, follow){
       let replacer = document.createComment(`移动节点`),
         helper = document.createElement(`div`),
         freeboard = document.getElementById(`freeboard`),
         parent = dom && dom.parentElement,
         offset = [ 10 , 10 ];
-      target.onmousedown = onmousedown;
+      target.onmousedown = follow ? onmousedown_follow : onmousedown;
       helper.setAttribute(`class`, `helper`);
-      function setPos(x, y){
-        helper.style.top = `${y}px`;
-        helper.style.left = `${x}px`;
+      function setPos(target, x, y){
+        target.style.top = `${y}px`;
+        target.style.left = `${x}px`;
       }
       function clone(obj){
         return ultiltiy.remove$$hashKey(JSON.parse(JSON.stringify(obj)));
       }
+      function addClass(target, c){
+        let cls = freeboard.getAttribute(`class`);
+        if(cls){
+          cls += cls.indexOf(c) == -1 ? c : "";
+          target.setAttribute(`class`, cls);
+        } else {
+          target.setAttribute(`class`, c);
+        }
+      }
+      function removeClass(target, c){
+        let cls = freeboard.getAttribute(`class`);
+        if(cls){
+          cls = cls.replace(new RegExp(`\\s*${c}`, `g`), "");
+          target.setAttribute(`class`, cls);
+        }
+      }
+      function onmousedown_follow(e){
+        if(e.button == 0){
+          offset = [ e.offsetX + 6 , e.offsetY + 6 ];
+          target.onmousedown = null;
+          window.onmousemove = function(ev){
+            let obj = getDomOffset(dom.offsetParent);
+            setPos(dom, ev.pageX - obj.left - offset[0], ev.pageY - obj.top - offset[1]);
+          }
+          document.onmouseup = onmouseup_follow;
+        }
+      }
+      function onmouseup_follow(e){
+        window.onmousemove = null;
+        target.onmousedown = onmousedown_follow;
+      }
       function onmousedown(e){
-        console.log("mousedown");
+        offset = [ 10 , 10 ]
         if(e.button == 0){
           parent && parent.replaceChild(replacer, dom);
           document.onmouseup = onmouseup;
           rootScope.$broadcast(`freeboard:changed`)
           document.body.append(helper);
-          setPos(e.pageX - offset[0], e.pageY - offset[1]);
+          setPos(helper, e.pageX - offset[0], e.pageY - offset[1]);
           timeout(() => {
-            freeboard.setAttribute(`class`, `mousedown`);
+            addClass(freeboard, `mousedown`)
           });
           target.onmousedown = null;
           window.onmousemove = function(e){
-            setPos(e.pageX - offset[0], e.pageY - offset[1]);
+            setPos(helper, e.pageX - offset[0], e.pageY - offset[1]);
           }
         }
       }
+      function getDomOffset(dom){
+        let top = dom.offsetTop, left = dom.offsetLeft, parent = dom;
+        while(parent = parent.offsetParent){
+          top += parent.offsetTop + parent.clientTop;
+          left += parent.offsetLeft + parent.clientLeft;
+        };
+        return {
+          top : top,
+          left : left
+        }
+      }
+      function getLocalOffset(e){
+        let top = e.clientY, left = e.clientX, parent = e.target;
+        while(parent = parent.offsetParent){
+          top -= parent.offsetTop + parent.clientTop;
+          left -= parent.offsetLeft + parent.clientLeft;
+        };
+        return {
+          top : top,
+          left : left
+        }
+      }
       function onmouseup(e){
-        console.log("mouseup");
         window.onmousemove = null;
         timeout(() => {
-          freeboard.removeAttribute(`class`);
+          removeClass(freeboard, `mousedown`);
         });
         rootScope.$apply(() => {
           let domtarget = e.target, list;
@@ -68,6 +120,16 @@
                 psCommand.insert(list, clone(option), inx)
               ]);
             }
+          } else if(domtarget.__isAbs__ == true){
+            let cl = clone(option), offset = getLocalOffset(e);
+            list = domtarget.__parentList__;
+            cl.top = offset.top;
+            cl.left = offset.left;
+            cl.width = 300;
+            cl.height = 200;
+            psCommand.add(`创建了组件[${option.type}]`,[
+              psCommand.append(list, cl)
+            ]);
           }
           parent && parent.replaceChild(dom, replacer)
           document.onmouseup = null;

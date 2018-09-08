@@ -1,0 +1,79 @@
+<config injector="$scope,$rootScope,$q,$timeout,psCommand"
+        params="/:id?"
+></config>
+<template>
+  <div>
+    <free-board-editor
+        data-type="'absolute'"
+        data-setting="setting"
+        data-options="options"
+        data-cotree="cotree"
+        data-on-del="onDel(d)"
+        data-on-preview="onPreview(d)"
+        data-on-preview-tree="onPreviewTree(d)"
+        data-on-save="onSave(d)">
+    </free-board-editor>
+  </div>
+</template>
+<script type="text/javascript">
+  export default function(scope,rootScope,q,timeout,psCommand) {
+    let storage = window.localStorage, dt = storage["freeboardView"], obj;
+    scope.onSave = function(d){
+      storage["freeboardView"] = d;
+    }
+    timeout(()=> {
+      scope.cotree = {
+        children : [{
+          abspath : "",
+          name : 'common',
+          ext : "",
+          children : [{
+            title : "v11",
+            abspath : "/free-comp-view.component",
+            ext : "component",
+            name : "abc"
+          }]
+        },{
+          name : 'project',
+          ext : "",
+          abspath : "",
+          children : [{
+            title : "v22",
+            abspath : "/free-comp-view.component",
+            ext : "component",
+            name : "edf"
+          }]
+        }]
+      }
+      scope.onDel = function(d){
+        console.log(d);
+      }
+      scope.onPreview = function(d){
+        storage['freeboardView'] = d;
+        var href = window.location.href.split("#")[0];
+        window.open(href + "#/preview");
+      }
+      scope.onPreviewTree = function(d){
+        console.log(d);
+      }
+      if(dt){
+        try{
+          obj = JSON.parse(dt)
+        } catch(e){
+          obj = {}
+        } finally {
+          if(obj.type == "absolute"){
+            scope.options = obj.data || [];
+            scope.setting = { attributes : obj.setting || {} }
+          } else {
+            scope.options = [];
+            scope.setting = { attributes : {} }
+          }
+        }
+      }
+    }, 1000)
+  }
+</script>
+<style type="less">
+
+</style>

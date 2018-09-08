@@ -1,0 +1,47 @@
+<config injector="$q, $compile, $timeout"
+></config>
+<template>
+  <div id="freeboard">
+    <free-board-loading
+        data-loading="loading"
+    ></free-board-loading>
+    <div>
+      <ps-tool-abs
+          ng-repeat="option in options"
+          ng-style="itemCal(option)"
+          data-parent-list="options"
+          data-option="option">
+      </ps-tool-abs>
+    </div>
+  </div>
+</template>
+<script type="text/javascript">
+  export default function(q, compile, timeout){
+    return {
+      scope : {
+        preview : "=",
+        options : "="
+      },
+      link(scope, element, attr){
+        element[0].__isAbs__ = true;
+        scope.itemCal = function(op){
+          return {
+            "top" : op.top + "px",
+            "left" : op.left + "px",
+            "width" : op.width + "px",
+            "height" : op.height + "px"
+          }
+        }
+        scope.$watch("options", (n, o, s) => {
+          if(n !== undefined){
+            element[0].__parentList__ = n;
+            scope.loading = false;
+          }
+        })
+      }
+    }
+  }
+</script>
+<style type="less">
+
+</style>

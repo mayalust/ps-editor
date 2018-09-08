@@ -1,0 +1,255 @@
+<config injector="$q,$timeout,$rootScope,$compile,psDrag,psCommand"
+        type = "factory"
+></config>
+<template>
+  <div class="item absolute" ng-class="highlight">
+  </div>
+</template>
+<script type="text/javascript">
+  import widget from "../toolkit/widget.js";
+  import ultility from "ps-ultility";
+  export default function(q,timeout,rootScope,compile,psDrag,psCommand,properties){
+    return {
+      scope : {
+        option : `=`,
+        parentList : `=`
+      },
+      link(scope, element, attr){
+        let tar = element[0],
+          startPoint = {},
+          storage = window.localStorage,
+          fragment = document.createDocumentFragment(),
+          iteminner = document.createElement(`div`),
+          upper = scope.option.type.substring(0,1).toUpperCase() + scope.option.type.substring(1),
+          el = document.createElement(`free-comp-${scope.option.type}`),
+          option = document.createElement(`div`),
+          head = document.createElement(`div`),
+          resize_r = document.createElement(`div`),
+          resize_b = document.createElement(`div`),
+          resize_br = document.createElement(`div`),
+          modal = document.createElement(`ps-modal`),
+          point,
+          buttons = [{
+            name : `编辑`,
+            onclick : function(e){
+              scope.$apply(()=>{
+                $append(document.body, modal);
+                iteminner.setAttribute("class", "item-inner");
+              })
+            }
+          },{
+            name : `删除`,
+            onclick : function(e){
+              scope.$apply(() => {
+                iteminner.setAttribute("class", "item-inner");
+                psCommand.add(`删除了组件`,[psCommand.remove(scope.parentList, scope.parentList.indexOf(scope.option))]);
+                rootScope.$broadcast(`freeboard:changed`);
+              })
+            }
+          },{
+            name : `剪切`,
+            onclick : function(e){
+              scope.$apply(() => {
+                iteminner.setAttribute("class", "item-inner");
+                storage['componentCopy'] = ultility.remove$$hashKey(JSON.stringify(scope.option));
+                psCommand.add(`剪切了组件`,[psCommand.remove(scope.parentList, scope.parentList.indexOf(scope.option))]);
+                rootScope.$broadcast(`freeboard:changed`);
+              });
+            }
+          },{
+            name : `复制`,
+            onclick : function(e){
+              scope.$apply(()=>{
+                iteminner.setAttribute("class", "item-inner");
+                storage['componentCopy'] = ultility.remove$$hashKey(JSON.stringify(scope.option));
+              })
+            }
+          }];
+        function each(arr, callback){
+          arr = arr || [];
+          for(var i = 0;i<arr.length; i++ ){
+            callback(arr[i],i);
+          }
+        }
+        function extend(a, b){
+          for(var i in b){
+            a[i] = b[i];
+          }
+          return a;
+        }
+        function clone( b ){
+          var obj = {};
+          for(var i in b){
+            obj[i] = b[i]
+          }
+          return obj;
+        }
+        function $append(target, dom){
+          target.appendChild(dom);
+          compile(dom)(scope);
+        }
+        function calcBasePoint(dom){
+          var target = dom,
+            x = target.offsetLeft,
+            y = target.offsetTop;
+          while(target = target.offsetParent){
+            x += target.offsetLeft + target.clientLeft;
+            y += target.offsetTop + target.clientTop - target.scrollTop;
+          }
+          return {
+            x : x - 90,
+            y : y + dom.clientHeight + dom.clientTop + 5
+          }
+        }
+        function addClass(target, c){
+          let cls = freeboard.getAttribute(`class`);
+          if(cls){
+            cls += cls.indexOf(c) == -1 ? ` ${c}` : ``;
+            target.setAttribute(`class`, cls);
+          } else {
+            target.setAttribute(`class`, c);
+          }
+        }
+        function removeClass(target, c){
+          let cls = freeboard.getAttribute(`class`);
+          if(cls){
+            cls = cls.replace(new RegExp(`\\s*${c}`, `g`), "");
+            target.setAttribute(`class`, cls);
+          }
+        }
+        modal.setAttribute(`data-option`, `option`);
+        modal.setAttribute(`data-properties`, `properties`);
+        modal.setAttribute(`data-on-submit`, `submit(d)`);
+        modal.setAttribute(`data-on-cancel`, `cancel()`);
+        iteminner.setAttribute(`class`,`item-inner`);
+        resize_r.setAttribute(`class`,`resize_r`);
+        resize_b.setAttribute(`class`,`resize_b`);
+        resize_br.setAttribute(`class`,`resize_br`);
+        head.setAttribute(`class`, `header`);
+        option.setAttribute(`class`, `option`);
+        el.setAttribute(`data-option`, `option`);
+        psDrag(head, scope.option, scope.parentList, element[0], true);
+        head.appendChild(option);
+        iteminner.appendChild(head);
+        iteminner.appendChild(el);
+        fragment.appendChild(resize_r);
+        fragment.appendChild(resize_b);
+        fragment.appendChild(resize_br);
+        $append(tar, iteminner);
+        $append(tar, fragment);
+        function onmouseup(){
+          scope.$apply(()=>{
+            scope.highlight = null;
+          });
+          document.body.style.cursor = "default";
+          window.onmousemove = null;
+        }
+        resize_r.onmousedown = function(ev){
+          let w = tar.style.width.split("px")[0] - 0;
+          scope.$apply(()=>{
+            scope.highlight = "highlight";
+          });
+          document.body.style.cursor = "e-resize";
+          window.onmousemove = function(e){
+            w += e.movementX;
+            tar.style.width = ( w > 100 ? w : 100 ) + "px";
+          }
+          document.body.onmouseup = onmouseup;
+        }
+        resize_b.onmousedown = function(e){
+          let h = tar.style.height.split("px")[0] - 0;
+          scope.$apply(()=>{
+            scope.highlight = "highlight";
+          });
+          document.body.style.cursor = "s-resize";
+          window.onmousemove = function(e){
+            h += e.movementY;
+            tar.style.height = ( h > 100 ? h : 100 ) + "px";
+          }
+          document.body.onmouseup = onmouseup;
+        }
+        resize_br.onmousedown = function(e){
+          let w = tar.style.width.split("px")[0] - 0,
+            h = tar.style.height.split("px")[0] - 0;
+          scope.$apply(()=>{
+            scope.highlight = "highlight";
+          });
+          document.body.style.cursor = "se-resize";
+          window.onmousemove = function(e){
+            w += e.movementX;
+            h += e.movementY;
+            tar.style.width = ( w > 100 ? w : 100 ) + "px";
+            tar.style.height = ( h > 100 ? h : 100 ) + "px";
+          }
+          document.body.onmouseup = onmouseup;
+        }
+        option.onmousedown = function(e){
+          e.stopPropagation();
+          iteminner.setAttribute("class", "item-inner highlight");
+          widget.createDrop(calcBasePoint(e.target), buttons)
+            .on("close", function(e){
+            iteminner.setAttribute("class", "item-inner");
+          });
+        }
+        scope.properties = properties.get(`freeComp${upper}`) || [];
+        scope.option.attributes = scope.option.attributes || {};
+        head.oncontextmenu = function(e){
+          iteminner.setAttribute("class", "item-inner highlight");
+          e.preventDefault();
+          widget.createDrop({
+            x : e.clientX,
+            y : e.clientY
+          }, buttons).on("close", function(e){
+            iteminner.setAttribute("class", "item-inner");
+          });
+        }
+        for(var i = 0; i < scope.properties.length; i++){
+          for(var j in scope.properties[i].attributes){
+            if(scope.option.attributes.hasOwnProperty(j)){
+              scope.properties[i].attributes[j][2] = scope.option.attributes[j];
+            } else {
+              scope.option.attributes[j] = scope.properties[i].attributes[j][2];
+            }
+          }
+        }
+        function checkDirty(){
+          for(var i = 0; i < scope.properties.length; i++){
+            for(var j in scope.properties[i].attributes){
+              if(scope.option.attributes[j] != scope.properties[i].attributes[j][2]){
+                return true;
+              }
+            }
+          }
+          return false
+        }
+        function getPropObj(){
+          var obj = {};
+          for(var i = 0; i < scope.properties.length; i++){
+            for(var j in scope.properties[i].attributes){
+              obj[j] = scope.properties[i].attributes[j][2];
+            }
+          }
+          return obj;
+        }
+        scope.submit = function(d){
+          let isDirty = checkDirty(),
+            newObj = isDirty
+              ? psCommand.add(`编辑了组件[${scope.option.type}]属性`, [
+                psCommand.update(scope, "option", getPropObj(), (n, val) => {
+                  if(val == undefined){
+                    return n.attributes;
+                  } else {
+                    n.attributes = val;
+                  }
+                })
+              ]) : {};
+        }
+        scope.cancel = function(){
+          console.log(`cancel`);
+        }
+      }
+    }
+  }
+</script>
+<style type="less">
+</style>

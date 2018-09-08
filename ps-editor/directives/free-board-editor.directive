@@ -42,9 +42,13 @@
     </div>
     <div class="rightpart">
       <div class="free-board-wrap" ng-class="setting.attributes.cls">
-        <free-board
+        <free-board ng-if="type=='relative'||type==undefined"
             data-options="options">
         </free-board>
+        <free-board-abs ng-if="type=='absolute'"
+            class="absolute"
+            data-options="options">
+        </free-board-abs>
       </div>
     </div>
   </div>
@@ -55,6 +59,7 @@
   export default function(rootScope,location,q,timeout,compile,psCommand,props,comptree){
     return {
       scope : {
+        type : "=",
         cotree : "=",
         setting : "=",
         options : "=",
@@ -219,6 +224,7 @@
         }
         scope.save = function(){
           let obj = ultility.remove$$hashKey(JSON.stringify({
+            type : scope.type || "relative",
             setting : scope.setting.attributes,
             data : scope.options
           }));
@@ -243,6 +249,7 @@
         }
         scope.preview = function(){
           let obj = ultility.remove$$hashKey(JSON.stringify({
+            type : scope.type || "relative",
             setting : scope.setting.attributes,
             data : scope.options
           }));
