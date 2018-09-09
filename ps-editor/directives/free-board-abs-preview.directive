@@ -3,13 +3,14 @@
 <template>
   <div class="free-board-wrap" ng-class="setting.cls">
     <div id="freeboard"
-         class="preview">
+         class="preview absolute">
       <div class="col-contain">
-        <ps-tool-preview
+        <ps-tool-abs-preview
+            ng-style="itemCal(option)"
             ng-repeat="option in options"
             data-parent-list="options"
             data-option="option">
-        </ps-tool-preview>
+        </ps-tool-abs-preview>
       </div>
     </div>
   </div>
@@ -24,7 +25,16 @@
         options : "="
       },
       link(scope, element, attr){
-        console.log(scope.setting);
+        scope.itemCal = function(op){
+          let pos = op.position || {};
+          return {
+            "position" : "absolute",
+            "top" : pos.top + "px",
+            "left" : pos.left + "px",
+            "width" : pos.width + "px",
+            "height" : pos.height + "px"
+          }
+        }
       }
     }
   }

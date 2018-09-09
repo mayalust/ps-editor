@@ -17,6 +17,7 @@
       link(scope, element, attr){
         let tar = element[0],
           storage = window.localStorage,
+          fragment = document.createDocumentFragment(),
           iteminner = document.createElement(`div`),
           upper = scope.option.type.substring(0,1).toUpperCase() + scope.option.type.substring(1),
           el = document.createElement(`free-comp-${scope.option.type}`),

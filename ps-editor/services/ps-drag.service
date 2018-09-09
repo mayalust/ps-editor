@@ -5,6 +5,8 @@
   export default function(psCommand,rootScope,timeout){
     return function(target, option, parentList, dom, follow){
       let replacer = document.createComment(`移动节点`),
+        moveObj = {},
+        events = {},
         helper = document.createElement(`div`),
         freeboard = document.getElementById(`freeboard`),
         parent = dom && dom.parentElement,
@@ -18,10 +20,16 @@
       function clone(obj){
         return ultiltiy.remove$$hashKey(JSON.parse(JSON.stringify(obj)));
       }
+      function extend(a, b){
+        for(var i in b){
+          a[i] = b[i];
+        }
+        return a;
+      }
       function addClass(target, c){
         let cls = freeboard.getAttribute(`class`);
         if(cls){
-          cls += cls.indexOf(c) == -1 ? c : "";
+          cls += cls.indexOf(c) == -1 ? " " + c : "";
           target.setAttribute(`class`, cls);
         } else {
           target.setAttribute(`class`, c);
@@ -36,24 +44,36 @@
       }
       function onmousedown_follow(e){
         if(e.button == 0){
+          moveObj = {};
+          e.__option__ = option;
+          events['startDrag'](e);
           offset = [ e.offsetX + 6 , e.offsetY + 6 ];
           target.onmousedown = null;
           window.onmousemove = function(ev){
             let obj = getDomOffset(dom.offsetParent);
+            moveObj = {
+              left : ev.pageX - obj.left - offset[0],
+              top : ev.pageY - obj.top - offset[1],
+            }
             setPos(dom, ev.pageX - obj.left - offset[0], ev.pageY - obj.top - offset[1]);
           }
-          document.onmouseup = onmouseup_follow;
+          document.body.onmouseup = onmouseup_follow;
         }
       }
       function onmouseup_follow(e){
+        e.__option__ = option;
+        option.position = option.position || {};
+        extend(option.position, moveObj);
+        events['endDrag'](e);
         window.onmousemove = null;
+        document.body.onmouseup = null;
         target.onmousedown = onmousedown_follow;
       }
       function onmousedown(e){
         offset = [ 10 , 10 ]
         if(e.button == 0){
           parent && parent.replaceChild(replacer, dom);
-          document.onmouseup = onmouseup;
+          document.body.onmouseup = onmouseup;
           rootScope.$broadcast(`freeboard:changed`)
           document.body.append(helper);
           setPos(helper, e.pageX - offset[0], e.pageY - offset[1]);
@@ -76,6 +96,9 @@
           top : top,
           left : left
         }
+      }
+      function on(eventname, callback){
+        events[eventname] = callback;
       }
       function getLocalOffset(e){
         let top = e.clientY, left = e.clientX, parent = e.target;
@@ -123,22 +146,26 @@
           } else if(domtarget.__isAbs__ == true){
             let cl = clone(option), offset = getLocalOffset(e);
             list = domtarget.__parentList__;
-            cl.top = offset.top;
-            cl.left = offset.left;
-            cl.width = 300;
-            cl.height = 200;
+            cl.position = cl.position || {}
+            cl.position.top = offset.top;
+            cl.position.left = offset.left;
+            cl.position.width = 300;
+            cl.position.height = 200;
             psCommand.add(`创建了组件[${option.type}]`,[
               psCommand.append(list, cl)
             ]);
           }
           parent && parent.replaceChild(dom, replacer)
-          document.onmouseup = null;
+          document.body.onmouseup = null;
           target.onmousedown = onmousedown;
           timeout(() => {
             rootScope.$broadcast(`freeboard:changed`)
           }, 200);
           helper.remove();
         });
+      }
+      return {
+        on : on
       }
     };
   }

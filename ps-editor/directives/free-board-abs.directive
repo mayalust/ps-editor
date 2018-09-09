@@ -7,10 +7,20 @@
     ></free-board-loading>
     <div>
       <ps-tool-abs
+          data-on-start-drag="onStartDrag(inx)"
+          data-on-end-drag="onEndDrag(inx)"
           ng-repeat="option in options"
           ng-style="itemCal(option)"
           data-parent-list="options"
           data-option="option">
+      </ps-tool-abs>
+      <ps-tool-abs
+          ng-if="focusItem"
+          data-on-start-drag="onStartDrag(inx)"
+          data-on-end-drag="onEndDrag(inx)"
+          ng-style="itemCal(focusItem)"
+          data-parent-list="options"
+          data-option="focusItem">
       </ps-tool-abs>
     </div>
   </div>
@@ -24,13 +34,49 @@
       },
       link(scope, element, attr){
         element[0].__isAbs__ = true;
+        let fragment = null;
         scope.itemCal = function(op){
+          let pos = op.position || {};
           return {
-            "top" : op.top + "px",
-            "left" : op.left + "px",
-            "width" : op.width + "px",
-            "height" : op.height + "px"
+            "top" : pos.top + "px",
+            "left" : pos.left + "px",
+            "width" : pos.width + "px",
+            "height" : pos.height + "px"
           }
+        }
+        function toArray(a){
+          var rs = [];
+          for(var i = 0; i < a.length; i++){
+            rs.push(a[i]);
+          }
+          return rs;
+        }
+        scope.onStartDrag = function(inx){
+          let tools = element[0].children[1],
+            toolsArr = toArray(tools.children),
+            item = tools.children[inx];
+          fragment = document.createDocumentFragment();
+          for(var i = 0; i < toolsArr.length; i++){
+            if(inx !== i){
+              fragment.appendChild(toolsArr[i]);
+            }
+          }
+          fragment.appendChild(toolsArr[inx]);
+          tools.appendChild(fragment);
+          fragment = null;
+        }
+        scope.onEndDrag = function(inx){
+          let tools = element[0].children[1],
+            toolsArr = toArray(tools.children),
+            item = tools.children[inx];
+          fragment = document.createDocumentFragment();
+          for(var i = 0; i < toolsArr.length;){
+            inx == i
+              ? inx = (fragment.appendChild(toolsArr.pop()), -1)
+              : i = (fragment.appendChild(toolsArr[i]), i + 1)
+          }
+          tools.appendChild(fragment);
+          fragment = null;
         }
         scope.$watch("options", (n, o, s) => {
           if(n !== undefined){

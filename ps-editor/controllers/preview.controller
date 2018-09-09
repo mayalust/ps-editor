@@ -3,15 +3,22 @@
 <template>
   <div>
       <free-board-preview
+          ng-if="type!=='absolute'"
           data-setting="setting"
           data-options="options">
       </free-board-preview>
+    <free-board-abs-preview
+        ng-if="type=='absolute'"
+        data-setting="setting"
+        data-options="options">
+    </free-board-abs-preview>
   </div>
 </template>
 <script type="text/javascript">
   export default function(scope,rootScope,q,timeout,psCommand) {
     let storage = window.localStorage,
       dt = JSON.parse(storage["freeboardView"]);
+    scope.type = dt.type;
     scope.options = dt.data;
     scope.setting = dt.setting;
   }

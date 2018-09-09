@@ -211,6 +211,7 @@
             offsetLeft = 200,
             offset = calcBasePoint( e.currentTarget ),
             ins = createDrop(offset, historys, `right`, scope.commands.length);
+          console.log(scope.options);
         }
         scope.undo = function(){
           psCommand.back();

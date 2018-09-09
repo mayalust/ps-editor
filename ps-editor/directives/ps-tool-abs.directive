@@ -12,11 +12,16 @@
     return {
       scope : {
         option : `=`,
-        parentList : `=`
+        parentList : `=`,
+        onStartDrag : `&`,
+        onEndDrag : `&`,
       },
       link(scope, element, attr){
         let tar = element[0],
+          dragIns,
           startPoint = {},
+          position = null,
+          inx = scope.parentList.indexOf(scope.option),
           storage = window.localStorage,
           fragment = document.createDocumentFragment(),
           iteminner = document.createElement(`div`),
@@ -128,7 +133,7 @@
         head.setAttribute(`class`, `header`);
         option.setAttribute(`class`, `option`);
         el.setAttribute(`data-option`, `option`);
-        psDrag(head, scope.option, scope.parentList, element[0], true);
+        dragIns = psDrag(head, scope.option, scope.parentList, element[0], true);
         head.appendChild(option);
         iteminner.appendChild(head);
         iteminner.appendChild(el);
@@ -137,15 +142,77 @@
         fragment.appendChild(resize_br);
         $append(tar, iteminner);
         $append(tar, fragment);
+        fragment = null;
+        tar.onmousedown = itemclick;
+        function itemclick(){
+          tar.onmousedown = function(e){
+            e.stopPropagation();
+          };
+          scope.$apply(() => {
+            timeout(()=>{
+              scope.onStartDrag({inx:inx});
+              window.onmousedown = windclick
+            });
+          });
+        }
+        function windclick(e){
+          window.onmousedown = null;
+          scope.$apply(() => {
+            scope.onEndDrag({inx:inx});
+            timeout(()=>{
+              tar.onmousedown = itemclick;
+            });
+          });
+        }
+        dragIns.on("startDrag", (e) => {
+          position = extend({
+            top : 0,
+            left : 0,
+            width : 300,
+            height : 200
+          }, scope.option.position);
+        });
+        dragIns.on("endDrag", (e) => {
+          scope.$apply(()=>{
+            psCommand.add(`调整了组件[${scope.option.type}]的位置空间`, [
+              psCommand.update2(scope, "option", scope.option.position, position, (s, n, val) => {
+                if(val == undefined){
+                  return s[n].position;
+                } else {
+                  s[n].position = val;
+                }
+              })
+            ])
+          });
+        });
         function onmouseup(){
           scope.$apply(()=>{
             scope.highlight = null;
+            psCommand.add(`调整了组件[${scope.option.type}]的大小`, [
+              psCommand.update2(scope, "option", extend(clone(position), {
+                width : tar.clientWidth + tar.clientLeft * 2,
+                height : tar.clientHeight + tar.clientTop * 2
+              }), position, (s, n, val) => {
+                if(val == undefined){
+                  return s[n].position;
+                } else {
+                  s[n].position = val;
+                }
+              })
+            ])
           });
           document.body.style.cursor = "default";
+          document.body.onmouseup = null;
           window.onmousemove = null;
         }
         resize_r.onmousedown = function(ev){
           let w = tar.style.width.split("px")[0] - 0;
+          position = extend({
+            top : 0,
+            left : 0,
+            width : 300,
+            height : 200
+          }, scope.option.position);
           scope.$apply(()=>{
             scope.highlight = "highlight";
           });
@@ -158,6 +225,12 @@
         }
         resize_b.onmousedown = function(e){
           let h = tar.style.height.split("px")[0] - 0;
+          position = extend({
+            top : 0,
+            left : 0,
+            width : 300,
+            height : 200
+          }, scope.option.position);
           scope.$apply(()=>{
             scope.highlight = "highlight";
           });
@@ -171,6 +244,12 @@
         resize_br.onmousedown = function(e){
           let w = tar.style.width.split("px")[0] - 0,
             h = tar.style.height.split("px")[0] - 0;
+          position = extend({
+            top : 0,
+            left : 0,
+            width : 300,
+            height : 200
+          }, scope.option.position);
           scope.$apply(()=>{
             scope.highlight = "highlight";
           });
