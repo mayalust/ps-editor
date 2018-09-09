@@ -7,8 +7,8 @@
     ></free-board-loading>
     <div>
       <ps-tool-abs
-          data-on-start-drag="onStartDrag(inx)"
-          data-on-end-drag="onEndDrag(inx)"
+          data-get-focus="getFocus(inx)"
+          data-lose-focus="loseFocus(inx)"
           ng-repeat="option in options"
           ng-style="itemCal(option)"
           data-parent-list="options"
@@ -16,8 +16,8 @@
       </ps-tool-abs>
       <ps-tool-abs
           ng-if="focusItem"
-          data-on-start-drag="onStartDrag(inx)"
-          data-on-end-drag="onEndDrag(inx)"
+          data-get-focus="getFocus(inx)"
+          data-lose-focus="loseFocus(inx)"
           ng-style="itemCal(focusItem)"
           data-parent-list="options"
           data-option="focusItem">
@@ -51,32 +51,16 @@
           }
           return rs;
         }
-        scope.onStartDrag = function(inx){
-          let tools = element[0].children[1],
-            toolsArr = toArray(tools.children),
-            item = tools.children[inx];
-          fragment = document.createDocumentFragment();
-          for(var i = 0; i < toolsArr.length; i++){
-            if(inx !== i){
-              fragment.appendChild(toolsArr[i]);
-            }
-          }
-          fragment.appendChild(toolsArr[inx]);
-          tools.appendChild(fragment);
-          fragment = null;
+        scope.getFocus = function(inx){
+          let tools = element[0].children[1]
+          tools.appendChild(tools.children[inx]);
         }
-        scope.onEndDrag = function(inx){
+        scope.loseFocus = function(inx){
           let tools = element[0].children[1],
-            toolsArr = toArray(tools.children),
-            item = tools.children[inx];
-          fragment = document.createDocumentFragment();
-          for(var i = 0; i < toolsArr.length;){
-            inx == i
-              ? inx = (fragment.appendChild(toolsArr.pop()), -1)
-              : i = (fragment.appendChild(toolsArr[i]), i + 1)
-          }
-          tools.appendChild(fragment);
-          fragment = null;
+            len = tools.children.length;
+          inx == len - 1
+            ? null
+            : tools.insertBefore(tools.children[len - 1], tools.children[inx])
         }
         scope.$watch("options", (n, o, s) => {
           if(n !== undefined){

@@ -13,8 +13,8 @@
       scope : {
         option : `=`,
         parentList : `=`,
-        onStartDrag : `&`,
-        onEndDrag : `&`,
+        getFocus : `&`,
+        loseFocus : `&`,
       },
       link(scope, element, attr){
         let tar = element[0],
@@ -150,7 +150,7 @@
           };
           scope.$apply(() => {
             timeout(()=>{
-              scope.onStartDrag({inx:inx});
+              scope.getFocus({inx:inx});
               window.onmousedown = windclick
             });
           });
@@ -158,7 +158,7 @@
         function windclick(e){
           window.onmousedown = null;
           scope.$apply(() => {
-            scope.onEndDrag({inx:inx});
+            scope.loseFocus({inx:inx});
             timeout(()=>{
               tar.onmousedown = itemclick;
             });
