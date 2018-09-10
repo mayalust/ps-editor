@@ -27,11 +27,21 @@
       link(scope, element, attr){
         scope.itemCal = function(op){
           let pos = op.position || {};
+          function toNumber(str){
+            if(typeof str == "string"){
+              let match = /([\d]+(?:\.[\d]+)?)%/g.exec(str);
+              return str;
+            } else if(typeof str == "number"){
+              return str  + "px"
+            } else {
+              return 0;
+            }
+          }
           return {
             "position" : "absolute",
             "top" : pos.top + "px",
-            "left" : pos.left + "px",
-            "width" : pos.width + "px",
+            "left" : toNumber(pos.left),
+            "width" : toNumber(pos.width),
             "height" : pos.height + "px"
           }
         }

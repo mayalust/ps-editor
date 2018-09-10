@@ -17,6 +17,9 @@
         target.style.top = `${y}px`;
         target.style.left = `${x}px`;
       }
+      function toPersantage(num){
+        return num * 100 + "%"
+      }
       function clone(obj){
         return ultiltiy.remove$$hashKey(JSON.parse(JSON.stringify(obj)));
       }
@@ -63,6 +66,7 @@
       function onmouseup_follow(e){
         e.__option__ = option;
         option.position = option.position || {};
+        moveObj.left = toPersantage( moveObj.left / freeboard.clientWidth );
         extend(option.position, moveObj);
         events['endDrag'](e);
         window.onmousemove = null;
@@ -148,8 +152,8 @@
             list = domtarget.__parentList__;
             cl.position = cl.position || {}
             cl.position.top = offset.top;
-            cl.position.left = offset.left;
-            cl.position.width = 300;
+            cl.position.left = toPersantage( offset.left / freeboard.clientWidth );
+            cl.position.width = "10%";
             cl.position.height = 200;
             psCommand.add(`创建了组件[${option.type}]`,[
               psCommand.append(list, cl)

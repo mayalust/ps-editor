@@ -21,6 +21,7 @@
           dragIns,
           startPoint = {},
           position = null,
+          freeboard = document.getElementById(`freeboard`),
           inx = scope.parentList.indexOf(scope.option),
           storage = window.localStorage,
           fragment = document.createDocumentFragment(),
@@ -155,6 +156,19 @@
             });
           });
         }
+        function toNumber(str){
+          if(typeof str == "string"){
+            let match = /([\d]+(?:\.[\d]+)?)%/g.exec(str);
+            return (match[1] - 0) / 100
+          } else if(typeof str == "number"){
+            return str
+          } else {
+            return 0;
+          }
+        }
+        function toPersantage(num){
+          return num * 100 + "%"
+        }
         function windclick(e){
           window.onmousedown = null;
           scope.$apply(() => {
@@ -167,8 +181,8 @@
         dragIns.on("startDrag", (e) => {
           position = extend({
             top : 0,
-            left : 0,
-            width : 300,
+            left : "0%",
+            width : "10%",
             height : 200
           }, scope.option.position);
         });
@@ -190,7 +204,7 @@
             scope.highlight = null;
             psCommand.add(`调整了组件[${scope.option.type}]的大小`, [
               psCommand.update2(scope, "option", extend(clone(position), {
-                width : tar.clientWidth + tar.clientLeft * 2,
+                width : toPersantage((tar.clientWidth + tar.clientLeft * 2) / freeboard.clientWidth),
                 height : tar.clientHeight + tar.clientTop * 2
               }), position, (s, n, val) => {
                 if(val == undefined){
@@ -206,11 +220,11 @@
           window.onmousemove = null;
         }
         resize_r.onmousedown = function(ev){
-          let w = tar.style.width.split("px")[0] - 0;
+          let w = tar.clientWidth;
           position = extend({
             top : 0,
-            left : 0,
-            width : 300,
+            left : "0%",
+            width : "10%",
             height : 200
           }, scope.option.position);
           scope.$apply(()=>{
@@ -224,11 +238,11 @@
           document.body.onmouseup = onmouseup;
         }
         resize_b.onmousedown = function(e){
-          let h = tar.style.height.split("px")[0] - 0;
+          let h = tar.clientHeight;
           position = extend({
             top : 0,
-            left : 0,
-            width : 300,
+            left : "0%",
+            width : "10%",
             height : 200
           }, scope.option.position);
           scope.$apply(()=>{
@@ -242,12 +256,12 @@
           document.body.onmouseup = onmouseup;
         }
         resize_br.onmousedown = function(e){
-          let w = tar.style.width.split("px")[0] - 0,
-            h = tar.style.height.split("px")[0] - 0;
+          let w = tar.clientWidth,
+            h = tar.clientHeight;
           position = extend({
             top : 0,
-            left : 0,
-            width : 300,
+            left : "0%",
+            width : "10%",
             height : 200
           }, scope.option.position);
           scope.$apply(()=>{
