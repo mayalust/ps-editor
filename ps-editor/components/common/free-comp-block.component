@@ -49,7 +49,7 @@
         scope.option.children =  scope.option.children || [];
         scope.$watch("option.attributes", (n, o, s) => {
           if(typeof n !== "undefined"){
-            element[0].children[0].style.height = n.height ? n.height + "px" : "auto";
+            element[0].children[0].style.minHeight = n.height ? n.height + "px" : 0;
           }
         })
       }
