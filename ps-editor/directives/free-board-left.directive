@@ -58,6 +58,14 @@
                     moveBtn.setAttribute(`data-option`, `list[${scope.list.length - 1}]`);
                     moveBtn.style.float = "right";
                     this.icon = "glyphicon glyphicon-file";
+                    timeout(() => {
+                      this.text.style.display = "inline-block";
+                      this.text.style.position = "absolute";
+                      this.text.style.width = "135px";
+                      this.text.style.overflow = "hidden";
+                      this.text.style.whiteSpace = "nowrap";
+                      this.text.style.textOverflow = "ellipsis";
+                    });
                     group.appendChild(moveBtn);
                     if(match[1] == "view"){
                       timeout(() => {

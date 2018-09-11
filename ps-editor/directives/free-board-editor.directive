@@ -41,7 +41,9 @@
       </free-board-left>
     </div>
     <div class="rightpart">
-      <div class="free-board-wrap" ng-class="setting.attributes.cls">
+      <div class="free-board-wrap"
+           ng-style="{'absolute':{overflow : 'auto'}}[type]"
+           ng-class="setting.attributes.cls">
         <free-board ng-if="type=='relative'||type==undefined"
             data-options="options">
         </free-board>
