@@ -9,6 +9,7 @@
         events = {},
         helper = document.createElement(`div`),
         freeboard = document.getElementById(`freeboard`),
+        wrap = freeboard.parentElement,
         parent = dom && dom.parentElement,
         offset = [ 10 , 10 ];
       target.onmousedown = follow ? onmousedown_follow : onmousedown;
@@ -55,10 +56,10 @@
           window.onmousemove = function(ev){
             let obj = getDomOffset(dom.offsetParent);
             moveObj = {
-              left : ev.pageX - obj.left - offset[0],
-              top : ev.pageY - obj.top - offset[1],
+              left : ev.pageX + wrap.scrollLeft - obj.left - offset[0],
+              top : ev.pageY + wrap.scrollTop - obj.top - offset[1],
             }
-            setPos(dom, ev.pageX - obj.left - offset[0], ev.pageY - obj.top - offset[1]);
+            setPos(dom, ev.pageX - obj.left + wrap.scrollLeft - offset[0], ev.pageY + wrap.scrollTop - obj.top - offset[1]);
           }
           document.body.onmouseup = onmouseup_follow;
         }
