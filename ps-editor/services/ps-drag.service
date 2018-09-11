@@ -152,8 +152,8 @@
             let cl = clone(option), offset = getLocalOffset(e);
             list = domtarget.__parentList__;
             cl.position = cl.position || {}
-            cl.position.top = offset.top;
-            cl.position.left = toPersantage( offset.left / freeboard.clientWidth );
+            cl.position.top = offset.top + wrap.scrollTop;
+            cl.position.left = toPersantage( ( offset.left + wrap.scrollLeft ) / freeboard.clientWidth );
             cl.position.width = "10%";
             cl.position.height = 200;
             psCommand.add(`创建了组件[${option.type}]`,[

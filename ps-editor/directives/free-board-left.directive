@@ -101,6 +101,9 @@
             });
             compile(tree)(scope);
           }
+        });
+        scope.$on("$destroy", ()=>{
+          ins && ins.destroy();
         })
         scope.colData = {
           type : `row`,
