@@ -32,6 +32,14 @@
               class="btn-xs btn-default pull-right">
         全局设置
       </button>
+      <button ng-click="exportToJSON()"
+              class="btn-xs btn-success pull-right">
+        导出JSON
+      </button>
+      <button ng-click="importFromJSON()"
+              class="btn-xs btn-success pull-right">
+        导入JSON
+      </button>
     </div>
     <div class="leftpart">
       <free-board-left
@@ -73,7 +81,10 @@
       link(scope,element,attr){
         const push = Array.prototype.push;
         let storage = window.localStorage,
+          coder = document.createElement(`ps-coder`),
           modal = document.createElement(`ps-modal`);
+        coder.setAttribute(`ng-model`, `code`);
+        coder.setAttribute(`data-config`, `codeConfig`);
         modal.setAttribute(`data-option`, `setting`);
         modal.setAttribute(`data-properties`, `properties`);
         modal.setAttribute(`data-on-submit`, `submit(d)`);
@@ -237,6 +248,24 @@
         scope.settingFn = function(){
           $append(document.body, modal);
         }
+        scope.exportToJSON = function(){
+          scope.codeConfig = {
+            title : "代码导出"
+          };
+          scope.code = ultility.remove$$hashKey(JSON.stringify({
+            type : scope.type || "relative",
+            setting : scope.setting.attributes,
+            data : scope.options
+          }, null, 2));
+          $append(document.body, coder);
+        };
+        scope.importFromJSON = function(){
+          scope.code = "";
+          scope.codeConfig = {
+            title : "代码导入"
+          };
+          $append(document.body, coder);
+        };
         scope.submit = function(d){
           let isDirty = checkDirty(),
             newObj = isDirty

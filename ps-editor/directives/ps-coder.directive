@@ -1,0 +1,66 @@
+<config injector="$q,$timeout,$compile"
+></config>
+<template>
+  <div class="modal-cover">
+    <div class="fb-modal">
+      <div class="title" ng-bind="config.title">
+      </div>
+      <div class="fb-modal-body">
+        <div id="editor"></div>
+      </div>
+    </div>
+  </div>
+</template>
+<script type="text/javascript">
+  import ace from "ace-builds";
+  export default function(q,timeout,compile){
+    return {
+      scope : {
+        config : `=`
+      },
+      require : `?ngModel`,
+      link(scope, element, attr, ngModel){
+        let modal = getElementsByClass(element[0], "fb-modal"),
+          el = getDomElementById(element[0], "editor"),editor;
+        function getElementsByClass(dom, cls){
+          if(dom.getAttribute("class") === cls){
+            return dom;
+          }
+          for(var item, i = 0; i < dom.children.length; i++){
+            item = getElementsByClass(dom.children[i], cls);
+            if(item){ return item; };
+          }
+        }
+        function getDomElementById(dom, id){
+          if(dom.getAttribute("id") == id){
+            return dom;
+          }
+          for(var item, i = 0; i < dom.children.length; i++){
+            item = getDomElementById(dom.children[i], id);
+            if(item){ return item; };
+          }
+        };
+        modal.style.top = "20px";
+        el.style.height = "600px";
+        element[0].onclick = function(e){
+          if(e.eventPhase === 2){
+            destroy();
+          }
+        };
+        editor = ace.edit(el);
+        ngModel.$render = function(){
+          editor.setValue(ngModel.$viewValue);
+        };
+        function destroy(){
+          element[0].remove();
+          modal = null;
+          editor.destroy();
+          scope.$destroy();
+        }
+      }
+    }
+  }
+</script>
+<style type="less" scoped="true">
+
+</style>

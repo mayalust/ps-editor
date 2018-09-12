@@ -1,6 +1,6 @@
 {
   "name": "ps-editor",
-  "version": "1.0.44",
+  "version": "1.0.45",
   "description": "ps-editor",
   "main": "./ps-editor/output.js",
   "scripts": {
@@ -22,5 +22,8 @@
     "proudsmart-tree": "^1.0.41",
     "ps-ultility": "^1.0.15",
     "smart-angular": "^1.0.66"
+  },
+  "dependencies": {
+    "ace-builds": "^1.4.1"
   }
 }
