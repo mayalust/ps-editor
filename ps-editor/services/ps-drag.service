@@ -48,13 +48,13 @@
       }
       function onmousedown_follow(e){
         if(e.button == 0){
+          let obj = getDomOffset(dom.offsetParent);
           moveObj = {};
+          offset = [ e.offsetX + 6 , e.offsetY + 6 ];
           e.__option__ = option;
           events['startDrag'](e);
-          offset = [ e.offsetX + 6 , e.offsetY + 6 ];
           target.onmousedown = null;
           window.onmousemove = function(ev){
-            let obj = getDomOffset(dom.offsetParent);
             moveObj = {
               left : ev.pageX + wrap.scrollLeft - obj.left - offset[0],
               top : ev.pageY + wrap.scrollTop - obj.top - offset[1],
@@ -67,7 +67,10 @@
       function onmouseup_follow(e){
         e.__option__ = option;
         option.position = option.position || {};
-        moveObj.left = toPersantage( moveObj.left / freeboard.clientWidth );
+        if(moveObj.left){
+          moveObj.left = toPersantage( moveObj.left / freeboard.clientWidth );
+        }
+        console.log(moveObj);
         extend(option.position, moveObj);
         events['endDrag'](e);
         window.onmousemove = null;
