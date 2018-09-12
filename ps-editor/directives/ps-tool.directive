@@ -122,8 +122,19 @@
             iteminner.setAttribute("class", "item-inner");
           });
         }
-        scope.properties = properties.get(`freeComp${upper}`) || [];
-        scope.option.attributes = scope.option.attributes || {};
+        properties.get(`freeComp${upper}`, (p)=>{
+          scope.properties = p || [];
+          for(var i = 0; i < scope.properties.length; i++){
+            for(var j in scope.properties[i].attributes){
+              scope.option.attributes = scope.option.attributes || {};
+              if(scope.option.attributes.hasOwnProperty(j)){
+                scope.properties[i].attributes[j][2] = scope.option.attributes[j];
+              } else {
+                scope.option.attributes[j] = scope.properties[i].attributes[j][2];
+              }
+            }
+          }
+        });
         head.oncontextmenu = function(e){
           iteminner.setAttribute("class", "item-inner highlight");
           e.preventDefault();
@@ -133,15 +144,6 @@
           }, buttons).on("close", function(e){
             iteminner.setAttribute("class", "item-inner");
           });
-        }
-        for(var i = 0; i < scope.properties.length; i++){
-          for(var j in scope.properties[i].attributes){
-            if(scope.option.attributes.hasOwnProperty(j)){
-              scope.properties[i].attributes[j][2] = scope.option.attributes[j];
-            } else {
-              scope.option.attributes[j] = scope.properties[i].attributes[j][2];
-            }
-          }
         }
         function checkDirty(){
           for(var i = 0; i < scope.properties.length; i++){

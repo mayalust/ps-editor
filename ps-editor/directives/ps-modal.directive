@@ -45,16 +45,19 @@
           target = modal.children[1].children[0].children[0];
         timeout(() => {
           modal.setAttribute(`class`, `fb-modal fade-in`);
-          selProp = scope.properties[0];
-          selProp.active = true;
-          scope.content = selProp.attributes;
-          console.log(scope.option);
-          for(var i = 0; i < scope.properties.length; i++){
-            for(var j in scope.properties[i].attributes){
-              scope.properties[i].attributes[j][2] = scope.option.attributes[j];
+        });
+        scope.$watch("properties", (n,o,s)=>{
+          if(typeof n !== "undefined"){
+            selProp = n[0];
+            selProp.active = true;
+            scope.content = selProp.attributes;
+            for(var i = 0; i < n.length; i++){
+              for(var j in n[i].attributes){
+                n[i].attributes[j][2] = scope.option.attributes[j];
+              }
             }
           }
-        });
+        })
         scope.menuSel = function(prop){
           selProp.active = false;
           prop.active = true;

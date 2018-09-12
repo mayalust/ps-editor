@@ -13,6 +13,7 @@
       link(scope, element, attr){
         let dom = document.createElement(`ps-${scope.option[1]}`);
         dom.setAttribute(`ng-model`, `option[2]`);
+        dom.setAttribute(`data-config`, `option[3]`);
         $append(element[0], dom);
         function $append(target, dom){
           target.appendChild(dom);

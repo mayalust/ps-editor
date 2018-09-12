@@ -1,19 +1,23 @@
-<config injector="$rootScope"
+<config injector="$q,$timeout,$rootScope"
 ></config>
 <properties>
   <script type="text/javascript">
-    function properties(){
-      return [{
-        label : "基本设定",
-        attributes : {
-          value : ["数值", "input", "default"],
-        }
-      },{
-        label : "高级设定",
-        attributes : {
-          input : ["获取变量", "input", ""]
-        }
-      }];
+    function properties(q,timeout,rootScope){
+      var defer = q.defer();
+      timeout(()=>{
+        defer.resolve([{
+          label : "基本设定",
+          attributes : {
+            value : ["数值", "input", "default"],
+          }
+        },{
+          label : "高级设定",
+          attributes : {
+            input : ["获取变量", "input", ""]
+          }
+        }])
+      }, 1000);
+      return defer.promise;
     }
     export { properties }
   </script>
@@ -24,7 +28,7 @@
   </div>
 </template>
 <script type="text/javascript">
-  export default function(rootScope){
+  export default function(q,timeout,rootScope){
     return {
       scope : {
         option : "="
