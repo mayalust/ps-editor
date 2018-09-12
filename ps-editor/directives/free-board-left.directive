@@ -81,8 +81,8 @@
                       editBtn.setAttribute(`class`,`btn-xs btn-default`);
                       editBtn.style.float = "right";
                       editBtn.onclick= e => {
-                        this.remove();
                         scope.onDelete({d:this});
+                        this.remove();
                       }
                       group.appendChild(editBtn);
                     }
