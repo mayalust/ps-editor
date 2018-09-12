@@ -1,6 +1,6 @@
 {
   "name": "ps-editor",
-  "version": "1.0.47",
+  "version": "1.0.48",
   "description": "ps-editor",
   "main": "./ps-editor/output.js",
   "scripts": {
