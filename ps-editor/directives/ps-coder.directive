@@ -7,6 +7,8 @@
       </div>
       <div class="fb-modal-body">
         <div id="editor"></div>
+        <button class="btn btn-primary btom" ng-click="submitclick()">确定</button>
+        <button class="btn btn-cancel btom" ng-click="cancelclick()">取消</button>
       </div>
     </div>
   </div>
@@ -16,7 +18,9 @@
   export default function(q,timeout,compile){
     return {
       scope : {
-        config : `=`
+        config : `=`,
+        onSubmit : `&`,
+        onCancel : `&`
       },
       require : `?ngModel`,
       link(scope, element, attr, ngModel){
@@ -51,6 +55,14 @@
         ngModel.$render = function(){
           editor.setValue(ngModel.$viewValue);
         };
+        scope.submitclick = function(){
+          ngModel.$setViewValue(editor.getValue());
+          scope.onSubmit({d:editor.getValue()});
+          destroy();
+        }
+        scope.cancelclick = function(){
+          destroy();
+        }
         function destroy(){
           element[0].remove();
           modal = null;
@@ -62,5 +74,8 @@
   }
 </script>
 <style type="less" scoped="true">
-
+  .btom{
+    float : right;
+    margin : 10px 5px 0 0;
+  }
 </style>

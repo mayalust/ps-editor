@@ -84,6 +84,7 @@
           coder = document.createElement(`ps-coder`),
           modal = document.createElement(`ps-modal`);
         coder.setAttribute(`ng-model`, `code`);
+        coder.setAttribute(`data-on-submit`, `codeSubmit(d)`);
         coder.setAttribute(`data-config`, `codeConfig`);
         modal.setAttribute(`data-option`, `setting`);
         modal.setAttribute(`data-properties`, `properties`);
@@ -179,7 +180,8 @@
             push.apply(a, b);
           }
         }
-        function extendChildren(a, b){
+        function extendChildren(p, b){
+          let a = p.children;
           for(let i = 0; i < b.length; i++){
             let m = find(a, (n)=>{
               console.log(n.name == b[i].name);
@@ -192,6 +194,7 @@
               a.push(b[i]);
             }
           }
+          return p;
         }
         psCommand.init();
         $render();
@@ -199,8 +202,8 @@
         scope.tools = comptree;
         scope.$watch(`cotree`, (n,o,s)=>{
           if(typeof n != `undefined`){
-            let m = extendChildren(comptree.children, n ? scope.cotree.children : []);
-            scope.tools = extend({},scope.tools);
+            scope.tools =  extendChildren(clone(comptree), n ? scope.cotree.children : []);
+            //extend({},scope.tools);
           }
         })
         scope.psCommand = psCommand;
@@ -258,6 +261,7 @@
             data : scope.options
           }, null, 2));
           $append(document.body, coder);
+          scope.codeSubmit = function(d){};
         };
         scope.importFromJSON = function(){
           scope.code = "";
@@ -265,6 +269,14 @@
             title : "代码导入"
           };
           $append(document.body, coder);
+          scope.codeSubmit = function(d){
+            let dt = JSON.parse(d);
+            scope.type = dt.type;
+            scope.setting = { attributes : dt.setting };
+            scope.options = dt.data;
+            psCommand.init();
+            $render();
+          }
         };
         scope.submit = function(d){
           let isDirty = checkDirty(),
