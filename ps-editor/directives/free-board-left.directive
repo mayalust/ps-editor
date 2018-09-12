@@ -59,12 +59,14 @@
                     moveBtn.style.float = "right";
                     this.icon = "glyphicon glyphicon-file";
                     timeout(() => {
-                      this.text.style.display = "inline-block";
-                      this.text.style.position = "absolute";
-                      this.text.style.maxWidth = "135px";
-                      this.text.style.overflow = "hidden";
-                      this.text.style.whiteSpace = "nowrap";
-                      this.text.style.textOverflow = "ellipsis";
+                      if(this && this.text && this.text.style){
+                        this.text.style.display = "inline-block";
+                        this.text.style.position = "absolute";
+                        this.text.style.maxWidth = "135px";
+                        this.text.style.overflow = "hidden";
+                        this.text.style.whiteSpace = "nowrap";
+                        this.text.style.textOverflow = "ellipsis";
+                      }
                     });
                     group.appendChild(moveBtn);
                     if(match[1] == "view"){
@@ -93,7 +95,7 @@
                   }
                 },
                 click : function(event){
-                  if(this.ext.length == 0){
+                  if(this && this.ext && this.ext.length == 0){
                     event.preventDefault();
                     this.toggle();
                   }
