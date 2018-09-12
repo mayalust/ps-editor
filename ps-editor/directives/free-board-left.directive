@@ -61,7 +61,7 @@
                     timeout(() => {
                       this.text.style.display = "inline-block";
                       this.text.style.position = "absolute";
-                      this.text.style.width = "135px";
+                      this.text.style.maxWidth = "135px";
                       this.text.style.overflow = "hidden";
                       this.text.style.whiteSpace = "nowrap";
                       this.text.style.textOverflow = "ellipsis";
@@ -81,6 +81,7 @@
                       editBtn.setAttribute(`class`,`btn-xs btn-default`);
                       editBtn.style.float = "right";
                       editBtn.onclick= e => {
+                        this.remove();
                         scope.onDelete({d:this});
                       }
                       group.appendChild(editBtn);
