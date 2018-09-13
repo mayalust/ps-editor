@@ -5,15 +5,49 @@
   </div>
 </template>
 <script type="text/javascript">
+  import { isArray, isObject } from "ps-ultility";
   export default function(q,timeout,compile){
     return {
       scope : {
         option : `=`,
       },
       link(scope, element, attr){
-        let dom = document.createElement(`ps-${scope.option[1]}`);
-        dom.setAttribute(`ng-model`, `option[2]`);
-        dom.setAttribute(`data-config`, `option[3]`);
+        const format = function(t){
+          switch(t){
+            case "input" :
+              return ['ng-model', 'data-config'];
+              break;
+            case "select" :
+              return ['ng-model', {
+                name : 'data-options',
+                formatter : function(obj, inx){
+                  if(isArray(obj)){
+                    if(isObject(obj[0])){
+                      return `item.id as item.label for item in option[${inx + 2}]`
+                    } else if(isArray(obj[0])){
+                      return `item[0] as item[1] for item in option[${inx + 2}]`
+                    } else {
+                      return `item in option[${inx + 2}]`
+                    }
+                  } else if (isObject(obj)){
+                    let fmt = obj.format;
+                    return `item.${fmt[0]} as item.${fmt[1]} for item in option[${inx + 2}]['value']`
+                  } else {
+                    throw new Error("错误的FORMAT格式");
+                  }
+                }
+              }, 'data-config'];
+              break;
+          }
+        };
+        console.log(scope.option);
+        let dom = document.createElement(`ps-${scope.option[1]}`),
+          fmt = format(scope.option[1]);
+        for (let i = 0 ; i < fmt.length; i++){
+          typeof fmt[i] == "object"
+            ? dom.setAttribute(`${fmt[i].name}`, fmt[i].formatter(scope.option[i - 0 + 2], i))
+            : dom.setAttribute(`${fmt[i]}`, `option[${ i - 0 + 2 }]`);
+        }
         $append(element[0], dom);
         function $append(target, dom){
           target.appendChild(dom);

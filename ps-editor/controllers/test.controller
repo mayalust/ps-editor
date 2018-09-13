@@ -1,0 +1,47 @@
+<config injector="$scope,$rootScope,$q,$timeout,psCommand"
+        params="/:id?"
+></config>
+<template>
+  {{m}}
+  <div style="width : 300px;position:relative; top : 30px; left : 50px;">
+    <ps-select
+        ng-model="m"
+        data-options="item.id as item.label for item in options"
+      >
+    </ps-select>
+  </div>
+</template>
+<script type="text/javascript">
+  import { urlparser } from "../../node_module/ps-ultility/ps-ultility.js";
+  export default function(scope,rootScope,q,timeout,psCommand) {
+    scope.m = null;
+    scope.options = [{
+      id : 0,
+      label : "a"
+    },{
+      id : 1,
+      label : "b"
+    },{
+      id : 2,
+      label : "b"
+    },{
+      id : 3,
+      label : "b"
+    },{
+      id : 4,
+      label : "b"
+    },{
+      id : 5,
+      label : "b"
+    },{
+      id : 6,
+      label : "b"
+    },{
+      id : 7,
+      label : "b"
+    }]
+  }
+</script>
+<style type="less">
+
+</style>

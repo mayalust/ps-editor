@@ -69,13 +69,12 @@
             this.dirty = true;
             item = clone(fn(scope[target]));
             extend(fn(scope[target]), newobj);
-            scope[target] = clone(scope[target]);
+            scope[target] = extend({}, scope[target]);
           },
           () => {
             this.dirty = true;
             fn(scope[target], item);
-            scope[target] = clone(scope[target]);
-            console.dir(scope[target]);
+            scope[target] = extend({}, scope[target]);
           }
         ];
         cmd[0]();

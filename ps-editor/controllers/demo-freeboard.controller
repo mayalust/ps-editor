@@ -15,6 +15,7 @@
   </div>
 </template>
 <script type="text/javascript">
+  import { urlparser } from "ps-ultility";
   export default function(scope,rootScope,q,timeout,psCommand) {
     let storage = window.localStorage, dt = storage["freeboardView"], obj;
     scope.onSave = function(d){

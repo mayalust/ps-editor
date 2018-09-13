@@ -1,0 +1,197 @@
+<config injector=""
+></config>
+<template>
+  <div style="padding : 5px;">
+    <div id="select"></div>
+  </div>
+</template>
+<script type="text/javascript">
+  import { findElement, isArray, isObject, extend, createDocumentFragment, setClass, removeClass,
+    screenOffset, createElement, addClass, clone} from "../../node_module/ps-ultility/ps-ultility.js";
+  export default function(){
+    return {
+      scope : {
+        ngModel : "=?",
+        config : "=?",
+        options : "@"
+      },
+      require : '?^ngModel',
+      link(scope, element, attr, ngModel) {
+        let reg = /(?:(?:([\w\[\]\d\.\"\']+)\s+as\s+)?([\w\[\]\d\.\"\']+)\s+for\s+)?(\w+)\s+in\s+([\w\[\]\.\"\']+)/g,
+          regex = /[\w]+(?:\.|\[)([\w]+)\]?/g,
+          match = reg.exec(scope["options"]),
+          options = match[4],
+          item = match[3],
+          label = match[2] || item,
+          id = match[1] || value,
+          _id, _label,
+          $dom = findElement( element[0] , (n)=>{ return  n.getAttribute("id") === "select"}),
+          //$spa = findElement( element[0] , (n)=>{ return  n.getAttribute("class").indexOf("spa") != -1 }),
+          dataOptions = eval(`scope.$parent.${options}`),
+          fn = new Function("scope", "options", "callback",
+            `for(var i = 0; i < options.length; i++){
+              let ${item} = options[i];
+              callback(${id}, ${label}, ${item});
+            }`
+          ),
+          defaultConfig = {
+            placeholder: '---请选择---',
+            search: true,
+            multiple: false,
+          };
+        _id = regex.exec(id)[1];
+        regex.lastIndex = 0;
+        _label = regex.exec(label)[1];
+        function render(n){
+          $dom.onclick = function(){
+            let ins = createDrop(ngModel.$viewValue, n);
+          };
+        }
+        function createDrop(n){
+          let popup = createElement("div"),
+            bg = createElement("div"),
+            offset = screenOffset($dom),
+            fragment = createDocumentFragment(),
+            search = createElement("div"),
+            inputbox = createElement("div"),
+            ul = createElement("div"),
+            arr = [],
+            searchinput,
+            searchBtn;
+          inputbox.innerHTML = `<div class="input-group">
+            <input id="input" type="text" class="form-control" placeholder="搜索...">
+            <span class="input-group-btn">
+              <button id="submit" class="btn btn-default" type="button">提交</button>
+            </span>
+          </div>`;
+          searchinput = findElement( inputbox , (n)=>{ return  n.getAttribute("id") === "input"});
+          searchBtn = findElement( inputbox , (n)=>{ return  n.getAttribute("id") === "submit"})
+          setClass(popup, "select-body");
+          setClass(bg, "select-bg");
+          setClass(ul, "select-ul");
+          bg.appendChild(popup);
+          search.appendChild(inputbox);
+          addClass(search, "select-li");
+          popup.appendChild(search);
+          popup.appendChild(ul);
+          popup.style.top = offset.top + $dom.clientHeight + "px";
+          popup.style.left = offset.left + "px";
+          popup.style.width = $dom.clientWidth + "px";
+          fn(scope, dataOptions, (id, label, itm) => {
+            item = createElement("div");
+            addClass(item, "select-li");
+            if(scope.config.multiple){
+              ngModel.$viewValue.some((n)=>{
+                return n[0] == id;
+              }) ? addClass(item, "active") : null;
+            } else {
+              ngModel.$viewValue[0] == id ? addClass(item, "active") : null;
+            }
+            item.innerText = label;
+            arr.push([id, label, item]);
+            ul.appendChild(item);
+            item.onclick = scope.config.multiple
+              ? function(e){
+                ngModel.$setViewValue(ngModel.$viewValue.some((n)=>{
+                  return n[0] === id;
+                }) ? ( removeClass( this, `active`),
+                  ngModel.$viewValue.filter((n) => {
+                  return n[0] !== id;
+                })) : ( addClass(this, `active`),
+                  ngModel.$viewValue.concat([[id, label]])));
+                ngModel.$render();
+              } : function(e){
+                ngModel.$setViewValue([id, label]);
+                ngModel.$render();
+                destory();
+              }
+          });
+          searchBtn.onclick = function(e){
+            let fragment = createDocumentFragment();
+            ul.innerHTML = "";
+            for(var i = 0; i < arr.length; i++){
+              if(arr[i][1].indexOf(searchinput.value) != -1){
+                fragment.appendChild(arr[i][2]);
+              }
+            }
+            ul.appendChild(fragment);
+          }
+          fragment.appendChild(bg);
+          document.body.appendChild(fragment);
+          fragment = null;
+          bg.onclick = function(e){
+            if(e.eventPhase == 2){
+              destory();
+            }
+          }
+          function destory(){
+            bg.remove();
+            bg = null;
+            popup = null;
+            for(var i = 0; i < arr.length; i++){
+              delete arr[i];
+            }
+          }
+        }
+        addClass($dom, "form-control");
+        scope.$parent.$watch("options", function(n,o,s){
+          isArray(n) ? render(n) : null;
+        });
+        scope.config = extend(clone(defaultConfig), scope.config || {});
+        render(dataOptions);
+        ngModel.$render = function(){
+          if(scope.config.multiple){
+            $dom.innerText = ngModel.$viewValue
+              ? ngModel.$viewValue.length > 0
+                ? ngModel.$viewValue.map((n)=>{
+                  return n[1];
+                }).toString()
+                : scope.config.placeholder
+              : scope.config.placeholder;
+          } else {
+            $dom.innerText = ngModel.$viewValue[1] || scope.config.placeholder;
+          }
+        };
+        Array.prototype.push.call(ngModel.$parsers, function (n) {
+          return scope.config.multiple ? n.map((n) => {
+            return n[0];
+          }) : n[0];
+        });
+        Array.prototype.push.call(ngModel.$formatters, function (n) {
+          if(typeof n !== "undefined"){
+            if(scope.config.multiple){
+              let ft =  dataOptions.filter((m) => {
+                return n.indexOf(m[_id]) !== -1;
+              });
+              return ft.map((n)=>{
+                return [n[_id], n[_label]];
+              });
+            } else {
+              let fd =  dataOptions.find((m) => {
+                return n === m[_id];
+              });
+              return fd ? [fd[_id], fd[_label]] : [];
+            }
+          } else {
+            return [];
+          }
+        });
+      }
+    }
+  }
+</script>
+<style type="less" scoped="true">
+  #select{
+    width : 100%;
+    background-color : #eee;
+    text-align : center;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+    cursor : pointer;
+  }
+  .spa {
+    color: red;font-size: 12px; margin-left: 10px;
+  }
+</style>

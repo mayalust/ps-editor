@@ -10,7 +10,9 @@
         <free-board-drag-btn data-option="colData"></free-board-drag-btn>
       </div>
       <div class="main-title">常用组件</div>
-      <div id="tree"></div>
+      <div class="treewrap">
+        <div id="tree"></div>
+      </div>
       <!--
       <div ng-repeat="op in tools" class="item">
         <span ng-bind="op.label"></span>
@@ -144,6 +146,15 @@
       border-bottom : 1px solid #888;
       color : #fff;
       padding : 5px;
+    }
+    .treewrap{
+      position : absolute;
+      top : 170px;
+      left : 0;
+      bottom : 0;
+      right : 0;
+      overflow-x : hidden;
+      overflow-y : auto;
     }
     .title {
       background-color : rgba(250,250,250,0);

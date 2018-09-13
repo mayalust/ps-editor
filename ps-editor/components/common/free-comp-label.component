@@ -5,17 +5,24 @@
     function properties(q,timeout,rootScope){
       var defer = q.defer();
       timeout(()=>{
+        let options = [{
+          id : 0,
+          label : "a"
+        },{
+          id : 1,
+          label : "b"
+        }], rs = [];
+        for(var i = 0; i < 50; i++){
+          rs.push([i,"label" + i]);
+        }
         defer.resolve([{
           label : "基本设定",
           attributes : {
             value : ["数值", "input", "default"],
+            aaa : ["选择", "select", null, [[0,"a"], [1,"b"]]],
+            bbb : ["多项选择", "select", [0,1], rs, { multiple : true }]
           }
-        },{
-          label : "高级设定",
-          attributes : {
-            input : ["获取变量", "input", ""]
-          }
-        }])
+        }]);
       }, 1000);
       return defer.promise;
     }

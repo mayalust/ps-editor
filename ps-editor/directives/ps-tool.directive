@@ -176,6 +176,7 @@
                   }
                 })
               ]) : {};
+          console.log(scope.option);
         }
         scope.cancel = function(){
           console.log(`cancel`);

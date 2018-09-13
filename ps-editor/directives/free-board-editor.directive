@@ -95,7 +95,7 @@
           attributes : {
             viewTitle : ["视图名称", "input", ""],
             description : ["视图描述", "input", ""],
-            cls : ["样式类", "input", ""]
+            cls : ["样式类", "select", "", [["","普通"],["dark","黑色"]]]
           }
         }];
         scope.setting = scope.setting || {
