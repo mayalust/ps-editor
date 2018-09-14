@@ -11,6 +11,7 @@
   export default function(q,timeout,rootScope,compile,psDrag,psCommand,properties){
     return {
       scope : {
+        setting : `=`,
         option : `=`,
         parentList : `=`
       },
@@ -104,6 +105,7 @@
         modal.setAttribute(`data-on-cancel`, `cancel()`);
         colHead.setAttribute(`data-option`, `option`);
         colHead.setAttribute(`data-parent-list`, `parentList`);
+        colHead.setAttribute(`data-setting`, `setting`);
         iteminner.setAttribute(`class`,`item-inner`);
         head.setAttribute(`class`, `header`);
         option.setAttribute(`class`, `option`);
@@ -145,6 +147,11 @@
             iteminner.setAttribute("class", "item-inner");
           });
         }
+        scope.$watch("setting", (n)=>{
+          if(n){
+            head.style.height = 16 / n.attributes.scale + "px";
+          }
+        })
         function checkDirty(){
           for(var i = 0; i < scope.properties.length; i++){
             for(var j in scope.properties[i].attributes){

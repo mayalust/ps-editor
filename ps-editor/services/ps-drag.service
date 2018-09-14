@@ -78,11 +78,11 @@
         target.onmousedown = onmousedown_follow;
       }
       function onmousedown(e){
-        offset = [ 10 , 10 ]
+        offset = [ 10 , 10 ];
         if(e.button == 0){
           parent && parent.replaceChild(replacer, dom);
           document.body.onmouseup = onmouseup;
-          rootScope.$broadcast(`freeboard:changed`)
+          rootScope.$broadcast(`freeboard:changed`);
           document.body.append(helper);
           setPos(helper, e.pageX - offset[0], e.pageY - offset[1]);
           timeout(() => {

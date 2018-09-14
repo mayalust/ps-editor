@@ -1,7 +1,7 @@
 <config injector="$timeout,$rootScope,psCommand"
 ></config>
 <template>
-  <div class="col-head">
+  <div class="col-head" ng-style="{height:30 / setting.attributes.scale + 'px'}">
   </div>
 </template>
 <script type="text/javascript">
@@ -9,6 +9,7 @@
   export default function(timeout,rootScope,psCommand){
     return {
       scope : {
+        setting : "=",
         option : "=",
         parentList : "="
       },
@@ -27,7 +28,7 @@
               rootScope.$broadcast(`freeboard:changed`);
             });
           }
-        }], ins;
+        }];
         element[0].oncontextmenu = function(e){
           element[0].setAttribute("class", "col-head highlight");
           e.preventDefault();
@@ -37,14 +38,13 @@
           }, buttons).on("close", function(e){
             element[0].setAttribute("class", "col-head");
           });
-        }
-        scope.$watchGroup(["option", "parentList"], (n,o,s)=>{
-          if(typeof n[1] !== undefined){
-            element[0].__parentList__ = scope.parentList;
-          }
-          if(typeof n[0] !== undefined && typeof n[0] !== undefined){
-            element[0].__index__ = scope.parentList.indexOf(scope.option);
-          }
+        };
+        scope.$watch("setting", (n)=>{
+          console.log(n);
+        })
+        rootScope.$on("freeboard:changed", ()=>{
+          element[0].__parentList__ = scope.parentList;
+          element[0].__index__ = scope.parentList.indexOf(scope.option);
         });
         element[0].style.height = "auto";
         element[0].__isColHead__ = true;

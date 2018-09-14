@@ -7,6 +7,7 @@
     ></free-board-loading>
     <div class="col-contain">
       <ps-tool
+          data-setting="setting"
           ng-repeat="option in options"
           data-parent-list="options"
           data-option="option">
@@ -21,6 +22,7 @@
   export default function(q, compile, timeout){
     return {
       scope : {
+        setting : "=",
         preview : "=",
         options : "="
       },

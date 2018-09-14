@@ -7,7 +7,7 @@
 </template>
 <script type="text/javascript">
   import { findElement, isArray, isObject, extend, createDocumentFragment, setClass, removeClass,
-    screenOffset, createElement, addClass, clone} from "../../node_module/ps-ultility/ps-ultility.js";
+    screenOffset, createElement, addClass, clone} from "ps-ultility";
   export default function(){
     return {
       scope : {
@@ -161,13 +161,13 @@
           if(typeof n !== "undefined"){
             if(scope.config.multiple){
               let ft =  dataOptions.filter((m) => {
-                return n.indexOf(m[_id]) !== -1;
+                return isArray(n) && n.indexOf(m[_id]) !== -1;
               });
               return ft.map((n)=>{
                 return [n[_id], n[_label]];
               });
             } else {
-              let fd =  dataOptions.find((m) => {
+              let fd = dataOptions.find((m) => {
                 return n === m[_id];
               });
               return fd ? [fd[_id], fd[_label]] : [];

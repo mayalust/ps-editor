@@ -50,15 +50,20 @@
     </div>
     <div class="rightpart">
       <div class="free-board-wrap"
-           ng-style="{'absolute':{overflow : 'auto'}}[type]"
+           ng-style="freeboradwrapStyle(setting)"
            ng-class="setting.attributes.cls">
-        <free-board ng-if="type=='relative'||type==undefined"
-            data-options="options">
-        </free-board>
-        <free-board-abs ng-if="type=='absolute'"
-            class="absolute"
-            data-options="options">
-        </free-board-abs>
+        <div class="scale-wrap" ng-style="wrapscale(setting)">
+          <free-board ng-if="type=='relative'||type==undefined"
+                      data-setting="setting"
+                      ng-style="fbstyle(setting)"
+                      data-options="options">
+          </free-board>
+          <free-board-abs ng-if="type=='absolute'"
+                          class="absolute"
+                          ng-style="{width : setting.attributes.width, height : setting.attributes.height}"
+                          data-options="options">
+          </free-board-abs>
+        </div>
       </div>
     </div>
   </div>
@@ -95,9 +100,34 @@
           attributes : {
             viewTitle : ["视图名称", "input", ""],
             description : ["视图描述", "input", ""],
-            cls : ["样式类", "select", "", [["","普通"],["dark","黑色"]]]
+            cls : ["样式类", "select", "", [["","普通"],["dark","黑色"]]],
+            scale : ["缩放比", "select", 1, [[1,"100%"],[.5,"50%"],[.25,"25%"],[.10,"10%"]]],
+            fontsize : ["基准字号", "input", "12"],
+            height : ["绝对高度", "input", "100%"],
+            width : ["绝对宽度", "input", "100%"]
           }
         }];
+        scope.freeboradwrapStyle = function(setting){
+          return {
+            "font-size" : (setting.attributes.fontsize ? setting.attributes.fontsize : 12) + "px"
+          }
+        }
+        scope.wrapscale = function(setting){
+          return {
+            width : setting.attributes.width * setting.attributes.scale + "px",
+            height : setting.attributes.height * setting.attributes.scale + "px",
+          }
+        };
+        scope.fbstyle = function(setting){
+          return {
+            width : setting.attributes.width + "px",
+            height : setting.attributes.height + "px",
+            "transform-origin" : "top left",
+            "-webkit-transform-origin" : "top left",
+            "transform" : 'scale(' + setting.attributes.scale + ',' + setting.attributes.scale + ')',
+            "-webkit-transform" : 'scale(' + setting.attributes.scale + ',' + setting.attributes.scale + ')'
+          }
+        };
         scope.setting = scope.setting || {
           attributes : {}
         };
