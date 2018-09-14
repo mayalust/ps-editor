@@ -21,6 +21,7 @@
         <ps-col-preview data-option="op" ng-if="preview"></ps-col-preview>
         <free-comp-col data-option="op" ng-if="!preview"></free-comp-col>
         <col-end ng-if="!preview"
+                 data-setting="setting"
                  data-parent-list="op.children">
         </col-end>
       </div>
@@ -39,6 +40,7 @@
     return {
       scope : {
         option : "=",
+        setting : "=",
         preview : "="
       },
       link(scope){

@@ -115,7 +115,7 @@
         scope.wrapscale = function(setting){
           return {
             width : setting.attributes.width * setting.attributes.scale + "px",
-            height : setting.attributes.height * setting.attributes.scale + "px",
+            //height : setting.attributes.height * setting.attributes.scale + "px",
           }
         };
         scope.fbstyle = function(setting){

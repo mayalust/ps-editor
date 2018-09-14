@@ -13,6 +13,7 @@
           data-option="option">
       </ps-tool>
       <col-end
+          data-setting="setting"
           data-parent-list="options"
       ></col-end>
     </div>

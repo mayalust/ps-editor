@@ -110,6 +110,7 @@
         head.setAttribute(`class`, `header`);
         option.setAttribute(`class`, `option`);
         el.setAttribute(`data-option`, `option`);
+        el.setAttribute(`data-setting`, `setting`);
         psDrag(head, scope.option, scope.parentList, element[0]);
         head.appendChild(option);
         iteminner.appendChild(head);

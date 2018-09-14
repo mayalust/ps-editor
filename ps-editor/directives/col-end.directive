@@ -1,7 +1,7 @@
 <config injector="$timeout,$rootScope,psCommand"
 ></config>
 <template>
-  <div class="col-end">
+  <div class="col-end" ng-style="{height:30 / setting.attributes.scale + 'px'}">
   </div>
 </template>
 <script type="text/javascript">
@@ -9,6 +9,7 @@
   export default function(timeout,rootScope,psCommand){
     return {
       scope : {
+        setting : "=",
         option : "=",
         parentList : "="
       },

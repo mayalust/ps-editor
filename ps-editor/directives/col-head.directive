@@ -39,9 +39,6 @@
             element[0].setAttribute("class", "col-head");
           });
         };
-        scope.$watch("setting", (n)=>{
-          console.log(n);
-        })
         rootScope.$on("freeboard:changed", ()=>{
           element[0].__parentList__ = scope.parentList;
           element[0].__index__ = scope.parentList.indexOf(scope.option);

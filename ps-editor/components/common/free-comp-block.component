@@ -23,6 +23,7 @@
           data-option="op">
       </ps-tool>
       <col-end
+          data-setting = "setting"
           data-parent-list="option.children"
       ></col-end>
       <div class="block-end"></div>
@@ -43,7 +44,8 @@
     return {
       scope : {
         option : "=",
-        preview : "="
+        preview : "=",
+        setting : "="
       },
       link(scope, element, attr, ngModel) {
         scope.option.children =  scope.option.children || [];
