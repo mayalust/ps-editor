@@ -31,7 +31,7 @@
       ></col-end>
       <div class="block-end"></div>
     </div>
-    <div class="free-board-block" ng-if="preview">
+    <div class="free-board-block" ng-if="preview" ng-class="size">
       <div class="block-header"></div>
       <div class="block-body">
         <ps-tool-preview
@@ -39,8 +39,8 @@
             data-parent-list="option.children"
             data-option="op">
         </ps-tool-preview>
-        <div class="block-end"></div>
       </div>
+      <div class="block-end"></div>
     </div>
   </div>
 </template>

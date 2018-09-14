@@ -31,19 +31,19 @@
       link(scope, element, attr){
         scope.freeboradwrapStyle = function(setting){
           return {
-            "font-size" : (setting.fontsize ? setting.fontsize : 12) + "px"
+            "font-size" : ( setting ? (setting.fontsize ? setting.fontsize : 12) : 12 ) + "px"
           }
         }
         scope.wrapscale = function(setting){
           return {
-            width : setting.width * setting.scale + "px",
-            height : setting.height * setting.scale + "px",
+            width : setting ? setting.width * setting.scale + "px" : "100%",
+            height : setting ? setting.height * setting.scale + "px" : "100%",
           }
         };
         scope.fbstyle = function(setting){
           return {
-            width : setting.width + "px",
-            height : setting.height + "px",
+            width : setting ? setting.width + "px" : "100%",
+            height : setting ? setting.height + "px" : "100%",
             "transform-origin" : "top left",
             "-webkit-transform-origin" : "top left",
             "transform" : 'scale(' + setting.scale + ',' + setting.scale + ')',
