@@ -6,6 +6,7 @@
       return [{
         label : "基本设定",
         attributes : {
+          size : ["尺寸", "select", "", [["huge", "巨大"], ["", "普通"]]],
           height : ["高度", "input", "300"],
         }
       }];
@@ -15,13 +16,15 @@
 </properties>
 <template>
   <div>
-    <div class="free-board-block" ng-if="!preview">
+    <div class="free-board-block" ng-if="!preview" ng-class="size">
       <div class="block-header"></div>
-      <ps-tool
-          ng-repeat="op in option.children"
-          data-parent-list="option.children"
-          data-option="op">
-      </ps-tool>
+      <div class="block-body">
+        <ps-tool
+            ng-repeat="op in option.children"
+            data-parent-list="option.children"
+            data-option="op">
+        </ps-tool>
+      </div>
       <col-end
           data-setting = "setting"
           data-parent-list="option.children"
@@ -30,12 +33,14 @@
     </div>
     <div class="free-board-block" ng-if="preview">
       <div class="block-header"></div>
-      <ps-tool-preview
-          ng-repeat="op in option.children"
-          data-parent-list="option.children"
-          data-option="op">
-      </ps-tool-preview>
-      <div class="block-end"></div>
+      <div class="block-body">
+        <ps-tool-preview
+            ng-repeat="op in option.children"
+            data-parent-list="option.children"
+            data-option="op">
+        </ps-tool-preview>
+        <div class="block-end"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -49,9 +54,10 @@
       },
       link(scope, element, attr, ngModel) {
         scope.option.children =  scope.option.children || [];
-        scope.$watch("option.attributes", (n, o, s) => {
+        scope.$watch("option", (n, o, s) => {
           if(typeof n !== "undefined"){
-            element[0].children[0].style.minHeight = n.height ? n.height + "px" : 0;
+            element[0].children[0].style.minHeight = n.attributes.height ? n.attributes.height + "px" : 0;
+            scope.size = n.attributes.size;
           }
         })
       }
