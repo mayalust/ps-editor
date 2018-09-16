@@ -29,7 +29,7 @@
           wrap.appendChild(el);
           wrap.onclick = function(e){
             scope.$apply(()=>{
-              rootScope.$broadcast("freeboard:select", scope.option);
+              rootScope.$broadcast("freeboard:select", [scope, "option"]);
             })
           };
           $append(tar, wrap);
