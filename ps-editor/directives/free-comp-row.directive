@@ -18,8 +18,10 @@
     <div class="colwrap">
       <div ng-repeat="op in option.children"
            ng-class="'col-xs-' + op.col">
-        <ps-col-preview data-option="op" ng-if="preview"></ps-col-preview>
-        <free-comp-col data-option="op" ng-if="!preview"></free-comp-col>
+        <ps-col-preview data-setting="setting"
+                        data-option="op" ng-if="preview"></ps-col-preview>
+        <free-comp-col data-setting="setting"
+                       data-option="op" ng-if="!preview"></free-comp-col>
         <col-end ng-if="!preview"
                  data-setting="setting"
                  data-parent-list="op.children">

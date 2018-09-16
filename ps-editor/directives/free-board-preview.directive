@@ -46,8 +46,8 @@
             height : setting ? setting.height + "px" : "100%",
             "transform-origin" : "top left",
             "-webkit-transform-origin" : "top left",
-            "transform" : 'scale(' + setting.scale + ',' + setting.scale + ')',
-            "-webkit-transform" : 'scale(' + setting.scale + ',' + setting.scale + ')'
+            "transform" : 'scale(' + ( setting ? setting.scale : 1 ) + ',' + ( setting ? setting.scale : 1 ) + ')',
+            "-webkit-transform" : 'scale(' + ( setting ? setting.scale : 1 ) + ',' + ( setting ? setting.scale : 1 ) + ')'
           }
         };
       }

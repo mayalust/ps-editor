@@ -1,4 +1,4 @@
-<config injector="$q,$compile,psDrag"
+<config injector="$rootScope,$q,$compile,psDrag"
         type = "factory"
 ></config>
 <template>
@@ -6,28 +6,36 @@
   </div>
 </template>
 <script type="text/javascript">
-  export default function(q,compile,psDrag){
+  export default function(rootScope,q,compile,psDrag){
     return {
       scope : {
+        setting : `=`,
         option : `=`,
         parentList : `=`
       },
       link(scope, element, attr){
-        let tar = element[0];
-        function each(arr, callback){
-          arr = arr || [];
-          for(var i = 0;i<arr.length; i++ ){
-            callback(arr[i],i);
-          }
-        }
+        let tar = element[0], fragment = document.createDocumentFragment();
         function $append(target, dom){
           target.appendChild(dom);
           compile(dom)(scope);
         }
-        let el = document.createElement(`free-comp-${scope.option.type}`);
+        let el = document.createElement(`free-comp-${scope.option.type}`),
+          wrap = document.createElement(`div`);
+        wrap.setAttribute(`class`, `tool-wrap`);
+        el.setAttribute(`data-setting`, `setting`);
         el.setAttribute(`data-option`, `option`);
         el.setAttribute(`data-preview`, `true`);
-        $append(tar, el);
+        if(scope.option.type !== "row" && scope.option.type !== "col" && scope.option.type !== "block"){
+          wrap.appendChild(el);
+          wrap.onclick = function(e){
+            scope.$apply(()=>{
+              rootScope.$broadcast("freeboard:select", scope.option);
+            })
+          };
+          $append(tar, wrap);
+        } else {
+          $append(tar, el);
+        }
       }
     }
   }

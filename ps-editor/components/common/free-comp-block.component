@@ -20,6 +20,7 @@
       <div class="block-header"></div>
       <div class="block-body">
         <ps-tool
+            data-setting = "setting"
             ng-repeat="op in option.children"
             data-parent-list="option.children"
             data-option="op">
@@ -35,6 +36,7 @@
       <div class="block-header"></div>
       <div class="block-body">
         <ps-tool-preview
+            data-setting = "setting"
             ng-repeat="op in option.children"
             data-parent-list="option.children"
             data-option="op">

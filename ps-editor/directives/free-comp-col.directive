@@ -3,7 +3,8 @@
 <template>
   <div>
     <ps-tool ng-repeat="op in option.children"
-             data-option="op"
+             data-setting = "setting"
+             data-option = "op"
              data-parent-list="option.children">
     </ps-tool>
   </div>
@@ -12,9 +13,13 @@
   export default function(q,compile){
     return {
       scope : {
+        setting : "=",
         option : `=`
       },
       link(scope, element, attr){
+        scope.$watch("setting", function(n){
+          console.log(n);
+        })
       }
     }
   }

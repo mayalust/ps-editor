@@ -26,7 +26,6 @@
           head = document.createElement(`div`),
           colHead = document.createElement(`col-head`),
           modal = document.createElement(`ps-modal`),
-          point,
           buttons = [{
             name : `编辑`,
             onclick : function(e){
@@ -150,6 +149,7 @@
         }
         scope.$watch("setting", (n)=>{
           if(n){
+            console.log(n);
             head.style.height = 16 / n.attributes.scale + "px";
           }
         })

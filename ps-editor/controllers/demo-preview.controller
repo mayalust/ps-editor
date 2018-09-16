@@ -21,6 +21,9 @@
     scope.type = dt.type;
     scope.options = dt.data;
     scope.setting = dt.setting;
+    rootScope.$on("freeboard:select", (e,d)=>{
+      console.log(e,d);
+    })
   }
 </script>
 <style type="less">

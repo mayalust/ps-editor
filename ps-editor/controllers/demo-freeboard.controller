@@ -51,7 +51,7 @@
       scope.onPreview = function(d){
         storage['freeboardView'] = d;
         var href = window.location.href.split("#")[0];
-        window.open(href + "#/preview");
+        window.open(href + "#/demoPreview");
       }
       scope.onPreviewTree = function(d){
         console.log(d);
