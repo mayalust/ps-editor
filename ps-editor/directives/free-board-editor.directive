@@ -52,18 +52,19 @@
       <div class="free-board-wrap"
            ng-style="freeboradwrapStyle(setting)"
            ng-class="setting.attributes.cls">
-        <div class="scale-wrap" ng-style="wrapscale(setting)">
+        <div class="scale-wrap" ng-style="wrapscale(setting)" ng-if="type=='!absolute'">
           <free-board ng-if="type=='relative'||type==undefined"
                       data-setting="setting"
                       ng-style="fbstyle(setting)"
                       data-options="options">
           </free-board>
-          <free-board-abs ng-if="type=='absolute'"
-                          class="absolute"
-                          ng-style="{width : setting.attributes.width, height : setting.attributes.height}"
-                          data-options="options">
-          </free-board-abs>
         </div>
+        <free-board-abs
+            ng-if="type=='absolute'"
+            class="absolute"
+            ng-style="{width : setting.attributes.width, height : setting.attributes.height}"
+            data-options="options">
+        </free-board-abs>
       </div>
     </div>
   </div>
