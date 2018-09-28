@@ -1,0 +1,44 @@
+<config injector="$rootScope,$timeout" type="factory"
+></config>
+<script type="text/javascript">
+  import ultiltiy from "ps-ultility";
+  export default function(rootScope,timeout){
+    function trimngOptions(scope, str){
+      let reg = /(?:(?:([\w\[\]\d\.\"\']+)\s+as\s+)?([\w\[\]\d\.\"\']+)\s+for\s+)?(\w+)\s+in\s+([\w\[\]\.\"\']+)/g,
+        match = reg.exec(scope[str || 'options']),
+        options = match[4],
+        item = match[3],
+        label = match[2] || item,
+        id = match[1] || value,
+        dataOptions = eval(`scope.$parent.${options}`),
+        each = new Function("scope", "options", "callback",
+          `for(var i = 0; i < options.length; i++){
+              let ${item} = options[i];
+              callback(${id}, ${label}, ${item});
+            }`
+        );
+      function getItemName(str){
+        let regex = /[\w]+(?:\.|\[)([\w]+)\]?/g;
+        return regex.exec(str)[1]
+      }
+      return {
+        id : getItemName(id),
+        label : getItemName(label),
+        rawOptions : dataOptions,
+        options : (function(){
+          var rs = [];
+          each(scope, dataOptions, function(id, label, item){
+            rs.push([id, label, item]);
+          })
+          return rs;
+        })(),
+        each : function(callback){
+          each(scope, dataOptions, callback);
+        }
+      };
+    }
+    return {
+      trimngOptions : trimngOptions
+    }
+  }
+</script>

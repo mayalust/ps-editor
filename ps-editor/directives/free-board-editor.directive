@@ -40,6 +40,12 @@
               class="btn-xs btn-success pull-right">
         导入JSON
       </button>
+      <!--
+      <ps-button-group
+          data-click="importFromJSON(savebtn)"
+          data-option="savebtn.id as savebtn.label for savebtn in savebtns"
+      ></ps-button-group>
+      -->
     </div>
     <div class="leftpart">
       <free-board-left
@@ -52,7 +58,7 @@
       <div class="free-board-wrap"
            ng-style="freeboradwrapStyle(setting)"
            ng-class="setting.attributes.cls">
-        <div class="scale-wrap" ng-style="wrapscale(setting)" ng-if="type=='!absolute'">
+        <div class="scale-wrap" ng-style="wrapscale(setting)" ng-if="type!=='absolute'">
           <free-board ng-if="type=='relative'||type==undefined"
                       data-setting="setting"
                       ng-style="fbstyle(setting)"

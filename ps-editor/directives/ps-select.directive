@@ -1,4 +1,4 @@
-<config injector=""
+<config injector="$timeout,psUltility"
 ></config>
 <template>
   <div style="padding : 5px;">
@@ -7,8 +7,9 @@
 </template>
 <script type="text/javascript">
   import { findElement, isArray, isObject, extend, createDocumentFragment, setClass, removeClass,
-    screenOffset, createElement, addClass, clone} from "ps-ultility";
-  export default function(){
+    screenOffset, createElement, addClass, clone, hasParent} from "ps-ultility";
+  import { createDrop } from "ps-ui";
+  export default function(timeout,psUtility){
     return {
       scope : {
         ngModel : "=?",
@@ -17,120 +18,33 @@
       },
       require : '?^ngModel',
       link(scope, element, attr, ngModel) {
-        let reg = /(?:(?:([\w\[\]\d\.\"\']+)\s+as\s+)?([\w\[\]\d\.\"\']+)\s+for\s+)?(\w+)\s+in\s+([\w\[\]\.\"\']+)/g,
-          regex = /[\w]+(?:\.|\[)([\w]+)\]?/g,
-          match = reg.exec(scope["options"]),
-          options = match[4],
-          item = match[3],
-          label = match[2] || item,
-          id = match[1] || value,
-          _id, _label,
-          $dom = findElement( element[0] , (n)=>{ return  n.getAttribute("id") === "select"}),
-          //$spa = findElement( element[0] , (n)=>{ return  n.getAttribute("class").indexOf("spa") != -1 }),
-          dataOptions = eval(`scope.$parent.${options}`),
-          fn = new Function("scope", "options", "callback",
-            `for(var i = 0; i < options.length; i++){
-              let ${item} = options[i];
-              callback(${id}, ${label}, ${item});
-            }`
-          ),
+        let $dom = findElement( element[0] , (n)=>{ return  n.getAttribute("id") === "select"}),
+          ins,
+          optData = psUtility.trimngOptions(scope),
+          id = optData.id,
+          label = optData.label,
+          dataOptions = optData.rawOptions,
+          options = optData.options,
           defaultConfig = {
             placeholder: '---请选择---',
             search: true,
             multiple: false,
           };
-        _id = regex.exec(id)[1];
-        regex.lastIndex = 0;
-        _label = regex.exec(label)[1];
-        function render(n){
-          $dom.onclick = function(){
-            let ins = createDrop(ngModel.$viewValue, n);
-          };
-        }
-        function createDrop(n){
-          let popup = createElement("div"),
-            bg = createElement("div"),
-            offset = screenOffset($dom),
-            fragment = createDocumentFragment(),
-            search = createElement("div"),
-            inputbox = createElement("div"),
-            ul = createElement("div"),
-            arr = [],
-            searchinput,
-            searchBtn;
-          inputbox.innerHTML = `<div class="input-group">
-            <input id="input" type="text" class="form-control" placeholder="搜索...">
-            <span class="input-group-btn">
-              <button id="submit" class="btn btn-default" type="button">提交</button>
-            </span>
-          </div>`;
-          searchinput = findElement( inputbox , (n)=>{ return  n.getAttribute("id") === "input"});
-          searchBtn = findElement( inputbox , (n)=>{ return  n.getAttribute("id") === "submit"})
-          setClass(popup, "select-body");
-          setClass(bg, "select-bg");
-          setClass(ul, "select-ul");
-          bg.appendChild(popup);
-          search.appendChild(inputbox);
-          addClass(search, "select-li");
-          popup.appendChild(search);
-          popup.appendChild(ul);
-          popup.style.top = offset.top + $dom.clientHeight + "px";
-          popup.style.left = offset.left + "px";
-          popup.style.width = $dom.clientWidth + "px";
-          fn(scope, dataOptions, (id, label, itm) => {
-            item = createElement("div");
-            addClass(item, "select-li");
-            if(scope.config.multiple){
-              ngModel.$viewValue.some((n)=>{
-                return n[0] == id;
-              }) ? addClass(item, "active") : null;
-            } else {
-              ngModel.$viewValue[0] == id ? addClass(item, "active") : null;
-            }
-            item.innerText = label;
-            arr.push([id, label, item]);
-            ul.appendChild(item);
-            item.onclick = scope.config.multiple
-              ? function(e){
-                ngModel.$setViewValue(ngModel.$viewValue.some((n)=>{
-                  return n[0] === id;
-                }) ? ( removeClass( this, `active`),
-                  ngModel.$viewValue.filter((n) => {
-                  return n[0] !== id;
-                })) : ( addClass(this, `active`),
-                  ngModel.$viewValue.concat([[id, label]])));
-                ngModel.$render();
-              } : function(e){
-                ngModel.$setViewValue([id, label]);
-                ngModel.$render();
-                destory();
-              }
+        optData.each((id, label, item)=>{
+          console.log(id, label, item);
+        });
+        function render(){
+          ins = createDrop($dom, ngModel.$viewValue, options, scope.config);
+          ins.on("select", function(e){
+            ngModel.$setViewValue(e.value);
+            ngModel.$render();
           });
-          searchBtn.onclick = function(e){
-            let fragment = createDocumentFragment();
-            ul.innerHTML = "";
-            for(var i = 0; i < arr.length; i++){
-              if(arr[i][1].indexOf(searchinput.value) != -1){
-                fragment.appendChild(arr[i][2]);
-              }
-            }
-            ul.appendChild(fragment);
-          }
-          fragment.appendChild(bg);
-          document.body.appendChild(fragment);
-          fragment = null;
-          bg.onclick = function(e){
-            if(e.eventPhase == 2){
-              destory();
-            }
-          }
-          function destory(){
-            bg.remove();
-            bg = null;
-            popup = null;
-            for(var i = 0; i < arr.length; i++){
-              delete arr[i];
-            }
+          ins.on("close", function(){
+            console.log("closed")
+          });
+          $dom.onclick = $domclick;
+          function $domclick(){
+            ins.open();
           }
         }
         addClass($dom, "form-control");
@@ -138,8 +52,8 @@
           isArray(n) ? render(n) : null;
         });
         scope.config = extend(clone(defaultConfig), scope.config || {});
-        render(dataOptions);
         ngModel.$render = function(){
+          ins ?  null : render();
           if(scope.config.multiple){
             $dom.innerText = ngModel.$viewValue
               ? ngModel.$viewValue.length > 0
@@ -161,16 +75,16 @@
           if(typeof n !== "undefined"){
             if(scope.config.multiple){
               let ft =  dataOptions.filter((m) => {
-                return isArray(n) && n.indexOf(m[_id]) !== -1;
+                return isArray(n) && n.indexOf(m[id]) !== -1;
               });
               return ft.map((n)=>{
-                return [n[_id], n[_label]];
+                return [n[id], n[label]];
               });
             } else {
               let fd = dataOptions.find((m) => {
-                return n === m[_id];
+                return n === m[id];
               });
-              return fd ? [fd[_id], fd[_label]] : [];
+              return fd ? [fd[id], fd[label]] : [];
             }
           } else {
             return [];

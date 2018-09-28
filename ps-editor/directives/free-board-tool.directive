@@ -38,9 +38,10 @@
                 }
               }, 'data-config'];
               break;
+            default :
+              return ['ng-model', 'data-config'];
           }
         };
-        console.log(scope.option);
         let dom = document.createElement(`ps-${scope.option[1]}`),
           fmt = format(scope.option[1]);
         for (let i = 0 ; i < fmt.length; i++){

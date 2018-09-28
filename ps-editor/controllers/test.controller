@@ -12,7 +12,7 @@
   </div>
 </template>
 <script type="text/javascript">
-  import { urlparser } from "../../node_module/ps-ultility/ps-ultility.js";
+  import { urlparser } from "ps-ultility";
   export default function(scope,rootScope,q,timeout,psCommand) {
     scope.m = null;
     scope.options = [{
